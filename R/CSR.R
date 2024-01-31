@@ -515,7 +515,7 @@ CSR_Simulation <- function(DaTa, NSim, p_adj, v.equal, p.value.cutoff, Parallel,
     colnames(CSR_Sim[["Final_Verdict"]]) <- c(var.name, "C", "R", "S", "CR", "CS", "SR", "CSR", "NA")
     CSR_Sim[["Final_Verdict"]] <- mutate_if(CSR_Sim[["Final_Verdict"]], is.numeric, ~ . /(NSim+1)* 100)
 
-    CSR_Sim[["Final_Verdict"]] <- merge(CSR_assign(pairwise_welch_parallel(CA_genus)), CSR_Sim[["Final_Verdict"]], all.x = TRUE)
+    CSR_Sim[["Final_Verdict"]] <- merge(CSR_assign(CSR_Sim[["data"]][[length(CSR_Sim[["data"]])]]), CSR_Sim[["Final_Verdict"]], all.x = TRUE)
 
     if(Keep_data == TRUE){
       CSR_Sim <<- CSR_Sim
