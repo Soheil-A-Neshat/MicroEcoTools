@@ -445,7 +445,7 @@ CSR_Simulation <- function(DaTa, NSim, p_adj, v.equal, p.value.cutoff, Parallel,
     if(missing(Parallel)) Parallel <- TRUE
     if(rowSums(DaTa[1,c(-1,-2)] <= 1) | rowSums(DaTa[1,c(-1,-2)] <= 100)) DaTa[,c(-1,-2)] <- DaTa[,c(-1,-2)]*100000
 
-    message(paste("CSR assignment with", NSim, "iterations and", p_adj, "as P-value correction method\n"))
+    message(paste("  CSR assignment with", NSim, "simulated datasets and", p_adj, "as P-value correction method\n"))
     CSR_Sim <- vector(mode = "list", length = 0)
     CSR_Sim[["data"]] <- vector(mode = "list", length = 0)
     CSR_Sim[["merged_data"]] <- vector(mode = "list", length = 0)
@@ -483,7 +483,7 @@ CSR_Simulation <- function(DaTa, NSim, p_adj, v.equal, p.value.cutoff, Parallel,
         as.data.frame(do.call(rbind,lapply(.list, function(.x) t(rmultinom(n = 1, prob = rep(sum(.x)/12, 12),  size = sum(.x) )))))
       }, expected = expected)}
 
-    message("Simulation            Done!\n")
+    message("  Simulation            Done!\n")
 
 
 
@@ -515,7 +515,7 @@ CSR_Simulation <- function(DaTa, NSim, p_adj, v.equal, p.value.cutoff, Parallel,
     colnames(CSR_Sim[["Final_Verdict"]]) <- c(var.name, "C", "R", "S", "CR", "CS", "SR", "CSR", "NA")
     CSR_Sim[["Final_Verdict"]] <- mutate_if(CSR_Sim[["Final_Verdict"]], is.numeric, ~ . /(NSim+1)* 100)
 
-    CSR_Sim[["Final_Verdict"]] <- merge(CSR_assign(CSR_Sim[["data"]][[length(CSR_Sim[["data"]])]]), CSR_Sim[["Final_Verdict"]], all.x = TRUE)
+    CSR_Sim[["Final_Verdict"]] <- merge(CSR_assign(DaTa), CSR_Sim[["Final_Verdict"]], all.x = TRUE)
 
     if(Keep_data == TRUE){
       CSR_Sim <<- CSR_Sim
