@@ -493,7 +493,7 @@ CSR_Simulation <- function(DaTa, NSim, p_adj, v.equal, p.value.cutoff, Parallel,
       rownames(CSR_Sim[[1]][[i]]) <- rownames(expected)
       CSR_Sim[[2]][[i]] <- as.data.frame(t(CSR_Sim[[1]][[i]]))
       CSR_Sim[[2]][[i]] <- cbind(DaTa[1],DaTa[2],CSR_Sim[[2]][[i]])
-      CSR_Sim[[3]][[i]] <- CSR_assign(pairwise_welch(dAtA = CSR_Sim[[2]][[i]], var.name = var.name, p_adj = p_adj, v.equal = v.equal ,p.value.cutoff = p.value.cutoff,Parallel = Parallel), var.name)[c(1,2)]
+      CSR_Sim[[3]][[i]] <- CSR_assign(pairwise_welch(dAtA = CSR_Sim[[2]][[i]], var.name = var.name, p_adj = p_adj, v.equal = v.equal ,p.value.cutoff = p.value.cutoff,Parallel = Parallel), var.name)[c(1,5)]
       if (i == length(CSR_Sim[["data"]])) message("\nCSR assignment        Done!\n")
     }
 
