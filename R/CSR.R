@@ -75,8 +75,8 @@ Welch_ANOVA <- function(dAtA, var.name, p_adj, Parallel){
 
     pb$terminate()
     }
-    colnames(a) <- c(var.name, "Welch anova p-value", "Method", "Remarks_WA")
-    a$`adjusted p-value`<-p.adjust(a$`Welch anova p-value`, method = p_adj)
+    colnames(a) <- c(var.name, "Welch-ANOVA p-value", "Method", "Remarks_WA")
+    a$`adjusted Welch-ANOVA p-value`<-p.adjust(a$`Welch-ANOVA p-value`, method = p_adj)
     return(a)
   }}
 
@@ -419,7 +419,7 @@ CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel) {
 #' CSR_Simulation(DaTa = CSR_data, NSim = 10000, p_adj = "BH")
 #' CSR_Simulation(DaTa = CSR_data, NSim = 10000, p_adj = "BH", var.name = "TAXA", NuLl.test = FALSE, Keep_data = FALSE)
 #' @export
-CSR_Simulation <- function(DaTa, NSim, p_adj, v.equal, p.value.cutoff, Parallel, var.name, NuLl.test, Keep_data){
+CSR_Simulation <- function(DaTa, NSim, p_adj, p.value.cutoff, Parallel, var.name, NuLl.test, Keep_data){
 
   if(!"dplyr" %in% (.packages())){
     require("dplyr")
@@ -483,22 +483,19 @@ CSR_Simulation <- function(DaTa, NSim, p_adj, v.equal, p.value.cutoff, Parallel,
         as.data.frame(do.call(rbind,lapply(.list, function(.x) t(rmultinom(n = 1, prob = rep(sum(.x)/12, 12),  size = sum(.x) )))))
       }, expected = expected)}
 
-    message("  Simulation            Done!\n")
-
-
-
+    message("  Simulation            ","\u2714","\n")
+    message("CSR assignment step, please be patient...")
     for (i in 1:length(CSR_Sim[["data"]])){
-      message("The CSR assignment step can take a while, please be patient...")
-      message(paste("Iteration", i, "out of", length(CSR_Sim[["data"]])))
+      message(paste("\n  Step", i, "out of", length(CSR_Sim[["data"]])))
       rownames(CSR_Sim[[1]][[i]]) <- rownames(expected)
       CSR_Sim[[2]][[i]] <- as.data.frame(t(CSR_Sim[[1]][[i]]))
       CSR_Sim[[2]][[i]] <- cbind(DaTa[1],DaTa[2],CSR_Sim[[2]][[i]])
-      CSR_Sim[[3]][[i]] <- CSR_assign(pairwise_welch(dAtA = CSR_Sim[[2]][[i]], var.name = var.name, p_adj = p_adj, v.equal = v.equal ,p.value.cutoff = p.value.cutoff,Parallel = Parallel), var.name)[c(1,5)]
-      if (i == length(CSR_Sim[["data"]])) message("\nCSR assignment        Done!\n")
+      CSR_Sim[[3]][[i]] <- CSR_assign(dAtA = CSR_Sim[[2]][[i]], var.name = var.name, p_adj = p_adj ,p.value.cutoff = p.value.cutoff,Parallel = Parallel)[c(1,5)]
+      if (i == length(CSR_Sim[["data"]])) message("\nCSR assignment        ", "\u2713")
     }
-
+    message("CSR assignment            ","\u2714","\n")
     CSR_Sim[["Verdict"]] <- CSR_Sim[[3]] %>% reduce(full_join, by=var.name)
-
+    message(paste("Counting CSR categories for each ",var.name,"\n"))
     for (i in 1:length(CSR_Sim[["Verdict"]][,1])){
       CSR_Sim[["Verdict"]][i, length(CSR_Sim[["data"]])+2] <- sum(str_count(CSR_Sim[["Verdict"]][i,-1][1:(NSim+1)], "(?<![\\S])C\\b"))
       CSR_Sim[["Verdict"]][i, length(CSR_Sim[["data"]])+3] <- sum(str_count(CSR_Sim[["Verdict"]][i,-1][1:(NSim+1)], "(?<![\\S])R\\b"))
@@ -508,9 +505,9 @@ CSR_Simulation <- function(DaTa, NSim, p_adj, v.equal, p.value.cutoff, Parallel,
       CSR_Sim[["Verdict"]][i, length(CSR_Sim[["data"]])+7] <- sum(str_count(CSR_Sim[["Verdict"]][i,-1][1:(NSim+1)], "(?<![\\S])SR\\b"))
       CSR_Sim[["Verdict"]][i, length(CSR_Sim[["data"]])+8] <- sum(str_count(CSR_Sim[["Verdict"]][i,-1][1:(NSim+1)], "(?<![\\S])CSR\\b"))
       CSR_Sim[["Verdict"]][i, length(CSR_Sim[["data"]])+9] <- sum(str_count(CSR_Sim[["Verdict"]][i,-1][1:(NSim+1)], "(?<![\\S])NA\\b"))
-      if (i == length(CSR_Sim[["Verdict"]][,1])) message("CSR category count    Done!\n")
+      if (i == length(CSR_Sim[["Verdict"]][,1])) message("CSR category count    ","\u2714","\n")
     }
-
+    message("Counting CSR categories        ","\u2714","\n")
     CSR_Sim[["Final_Verdict"]] <- CSR_Sim[["Verdict"]][c(1,(length(CSR_Sim[["data"]])+2):(length(CSR_Sim[["data"]])+9))]
     colnames(CSR_Sim[["Final_Verdict"]]) <- c(var.name, "C", "R", "S", "CR", "CS", "SR", "CSR", "NA")
     CSR_Sim[["Final_Verdict"]] <- mutate_if(CSR_Sim[["Final_Verdict"]], is.numeric, ~ . /(NSim+1)* 100)
