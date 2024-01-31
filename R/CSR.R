@@ -6,26 +6,57 @@
 #' @param dAtA Dataframe that contains experimental group, replicates, and parameters.
 #' @param var.name Variable name used for generating output table, for example, taxa, trait, function.
 #' @param p_adj P-value adjustment method. All methods mentioned in ?p.adjust function can be used ("BH", "BY", "holm", "hommel" or "none").
+#' @param Parallel Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses half of the available CPU cores to perform the calculations.
 #' @return This function returns a table containing the statistical comparison results.
 #'The input data sample:
 #'
-#' | Exp.Grp | Reactor | TAXA | Count |
+#' | Exp.Grp | Reactor | TAXA1 | TAXA2 |
 #'|-----------|:-----------:|:-----------:|-----------:|
-#'  | I  | 1 | 1 | rk1 |  68  |
-#'  | I  | 2 | 1 | rk1 |  70  |
-#'  | X0 | 1 | 1 | rk1 | 3452 |
-#'  | X0 | 3 | 1 | rk1 | 3274 |
-#'  | X0 | 3 | 1 | rk1 | 3601 |
-#' @examples
-#' Welch_ANOVA(dAtA = CSR_data, var.name = "taxa", p_adj = "BH")
+#'  | 0  | 1 | 1 | 50 |  68  |
+#'  | 0  | 2 | 1 | 60 |  70  |
+#'  | 0  | 3 | 1 | 10 | 3452 |
+#'  | 1  | 1 | 1 | 56 | 3274 |
+#'  | 1  | 2 | 1 | 89 | 3601 |
+#'  | 1  | 3 | 1 | 56 | 3274 |
+#'  
+#'  #' @examples
+#' Welch_ANOVA(dAtA = CSR_data, var.name = "taxa", p_adj = "BH", Parallel)
 #' @export
-Welch_ANOVA <- function(dAtA, var.name, p_adj){
+Welch_ANOVA <- function(dAtA, var.name, p_adj, Parallel){
   if(missing(dAtA)) print("No data input!") else {
     a <- data.frame()
     if(missing(var.name)) var.name <- "Variable"
     if(missing(p_adj)) p_adj <- "BH"
-
+    if(missing(Parallel)) Parallel <- TRUE
     total_iterations <- length(dAtA[1,]) - 2
+    
+    if(Parallel == TRUE){
+      ncores <- parallel::detectCores() - 2
+      if (ncores < 1) ncores <- 1 
+      cl <- parallel::makeCluster(ncores)
+      doParallel::registerDoParallel(cl)
+      
+      message(paste0("  Parallel Welch-ANOVA comparisons with ", ncores, " CPU cores. Please be patient..."))
+      
+      a_result <- foreach::foreach (i = 1:total_iterations, .combine = rbind) %dopar% {
+        f <- as.formula(noquote(paste0("`",names(dAtA)[i+2],"`","~",paste(names(dAtA)[1],collapse = " + "))))
+        a[i,1] <- names(dAtA)[i+2]
+        if (is.na(oneway.test(f, data = dAtA, var.equal = FALSE)$p.value)){
+          a[i,2] <- oneway.test(f, data = dAtA, var.equal = TRUE)$p.value
+          a[i,3] <- oneway.test(f, data = dAtA, var.equal = TRUE)$method
+          a[i,4] <- "*"}else {
+            a[i,2] <- oneway.test(f, data = dAtA, var.equal = FALSE)$p.value
+            a[i,3] <- oneway.test(f, data = dAtA, var.equal = FALSE)$method
+            a[i,4] <- "-"}
+        Sys.sleep(1 / total_iterations)
+        return(a[i, , drop = FALSE])
+      }
+      
+      parallel::stopCluster(cl)
+      foreach::registerDoSEQ()
+      a <- a_result
+      
+    }else{
     pb <- progress::progress_bar$new(format = "  Welch ANOVA [:bar] :percent in :elapsed", clear = FALSE, total = total_iterations)
 
     for (i in 1:total_iterations){
@@ -43,7 +74,8 @@ Welch_ANOVA <- function(dAtA, var.name, p_adj){
     }
 
     pb$terminate()
-    colnames(a) <- c(var.name, "Welch anova p-value", "Method", "Remarks")
+    }
+    colnames(a) <- c(var.name, "Welch anova p-value", "Method", "Remarks_WA")
     a$`adjusted p-value`<-p.adjust(a$`Welch anova p-value`, method = p_adj)
     return(a)
   }}
@@ -63,13 +95,15 @@ Welch_ANOVA <- function(dAtA, var.name, p_adj){
 #' @return This function returns a table containing the pairwise statistical comparison results. The output table can be fed into the CSR_assign function to assign CSR categories.
 #'The input data sample:
 #'
-#' | Exp.Grp | Reactor | TAXA | Count |
+#' | Exp.Grp | Reactor | TAXA1 | TAXA2 |
 #'|-----------|:-----------:|:-----------:|-----------:|
-#'  | I  | 1 | 1 | rk1 |  68  |
-#'  | I  | 2 | 1 | rk1 |  70  |
-#'  | X0 | 1 | 1 | rk1 | 3452 |
-#'  | X0 | 3 | 1 | rk1 | 3274 |
-#'  | X0 | 3 | 1 | rk1 | 3601 |
+#'  | 0  | 1 | 1 | 50 |  68  |
+#'  | 0  | 2 | 1 | 60 |  70  |
+#'  | 0  | 3 | 1 | 10 | 3452 |
+#'  | 1  | 1 | 1 | 56 | 3274 |
+#'  | 1  | 2 | 1 | 89 | 3601 |
+#'  | 1  | 3 | 1 | 56 | 3274 |
+#'  
 #' @examples
 #' pairwise_welch(dAtA = CSR_data)
 #' pairwise_welch(dAtA = CSR_data, var.name = "taxa", p_adj = "BH")
@@ -84,6 +118,9 @@ pairwise_welch <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Paral
     if(missing(Parallel)) Parallel <- TRUE
     library(progress)
     print(Sys.time())
+    if(rowSums(dAtA[1,c(-1,-2)] <= 1) | rowSums(dAtA[1,c(-1,-2)] <= 100)) {
+      message("  Relative abundance data detected. Converting to count data by multiplying the relative abundances by 100,000 ...")
+      dAtA[,c(-1,-2)] <- dAtA[,c(-1,-2)]*100000}
     dAtA <- dAtA[,-2]
     n <- (factorial(length(unique(dAtA[,1]))))/(2*factorial(length(unique(dAtA[,1]))-2))
     c <- t(combn(unique(dAtA[,1]),2))
@@ -96,10 +133,10 @@ pairwise_welch <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Paral
 
     if(Parallel == TRUE){
     message(paste("  Pairwise comparison of variables with variable name", var.name, ", P-value cutoff of" , p.value.cutoff, "in parallel mode."))
-    ncores <- parallel::detectCores() / 2
-
-    cl <- makeCluster(ncores)
-    registerDoParallel(cl)
+    ncores <- parallel::detectCores() - 2
+    if (ncores < 1) ncores <- 1 
+    cl <- parallel::makeCluster(ncores)
+    doParallel::registerDoParallel(cl)
 
     # Create a progress bar
 
@@ -154,8 +191,8 @@ pairwise_welch <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Paral
 
     message("  Pairwise Welch ANOVA effect size interpretation step 4/4. Please be patient...")
 
-    cl <- makeCluster(ncores)
-    registerDoParallel(cl)
+    cl <- parallel::makeCluster(ncores)
+    doParallel::registerDoParallel(cl)
 
     a <- foreach::foreach (i = 1:length(a[,1]), .combine = rbind) %dopar% {
 
@@ -253,27 +290,35 @@ pairwise_welch <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Paral
 #' @return This function returns a table containing the pairwise statistical comparison results. The output table can be fed into the CSR_assign function to assign CSR categories.
 #'The input data sample:
 #'
-#' | Exp.Grp | Reactor | TAXA | Count |
+#' | Exp.Grp | Reactor | TAXA1 | TAXA2 |
 #'|-----------|:-----------:|:-----------:|-----------:|
-#'  | I  | 1 | 1 | rk1 |  68  |
-#'  | I  | 2 | 1 | rk1 |  70  |
-#'  | X0 | 1 | 1 | rk1 | 3452 |
-#'  | X0 | 3 | 1 | rk1 | 3274 |
-#'  | X0 | 3 | 1 | rk1 | 3601 |
+#'  | 0  | 1 | 1 | 50 |  68  |
+#'  | 0  | 2 | 1 | 60 |  70  |
+#'  | 0  | 3 | 1 | 10 | 3452 |
+#'  | 1  | 1 | 1 | 56 | 3274 |
+#'  | 1  | 2 | 1 | 89 | 3601 |
+#'  | 1  | 3 | 1 | 56 | 3274 |
+#'  
 #' @examples
-#' pairwise_welch(dAtA = CSR_data)
-#' pairwise_welch(dAtA = CSR_data, var.name = "taxa", p_adj = "BH")
-#' pairwise_welch(dAtA = CSR_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+#' CSR_assign(dAtA = CSR_data)
+#' CSR_assign(dAtA = CSR_data, var.name = "taxa", p_adj = "BH")
+#' CSR_assign(dAtA = CSR_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
 #' @export
-CSR_assign <- function(dAtA, var.name, count_input) {
+CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel) {
   if(missing(dAtA)) print("No data input!") else {
     if(missing(var.name)) var.name <- "Trait"
-    if(missing(count_input)) count_input <- TRUE
+    if(missing(p_adj)) p_adj <- "BH"
+    if(missing(p.value.cutoff)) p.value.cutoff <- 0.05
+    if(missing(Parallel)) Parallel <- TRUE
     j=1
-    if (count_input == TRUE){
-      pww <- pairwise_welch(dAtA = dAtA, var.name = var.name)
+    wa <- Welch_ANOVA(dAtA = dAtA, var.name = var.name, p_adj = "BH")
+    if (colnames(dAtA[2]) != "P1"){
+      message("  Creating the pairwise Welch-ANOVA table from the input data using pairwise_welch function ...")
+      pww <- pairwise_welch(dAtA = dAtA, var.name = var.name, p_adj = p_adj, p.value.cutoff = p.value.cutoff, Parallel = Parallel)
       dAtA <- pww
     }
+    
+    
     filtered_dAtA <- dAtA[which(dAtA[,2]==unique(dAtA[,2])[1] | dAtA[,3]==unique(dAtA[,3])[length(unique(dAtA[,3]))]),]
 
 
@@ -332,7 +377,8 @@ CSR_assign <- function(dAtA, var.name, count_input) {
 
             }
 
-    colnames(a) <- c(paste(var.name), "CSR categories", "Remarks")
+    colnames(a) <- c(paste(var.name), "CSR categories", "Remarks_CSR")
+    a <- merge(wa[, c(1, 2, 3, 5)], a, all.x = TRUE)
     return(a)
   }}
 
@@ -359,13 +405,15 @@ CSR_assign <- function(dAtA, var.name, count_input) {
 #'
 #' The input data sample:
 #'
-#' | Exp.Grp | Reactor | TAXA | Count |
-#' |-----------|:-----------:|:-----------:|-----------:|
-#'  | I  | 1 | 1 | rk1 |  68  |
-#'  | I  | 2 | 1 | rk1 |  70  |
-#'  | X0 | 1 | 1 | rk1 | 3452 |
-#'  | X0 | 3 | 1 | rk1 | 3274 |
-#'  | X0 | 3 | 1 | rk1 | 3601 |
+#' | Exp.Grp | Reactor | TAXA1 | TAXA2 |
+#'|-----------|:-----------:|:-----------:|-----------:|
+#'  | 0  | 1 | 1 | 50 |  68  |
+#'  | 0  | 2 | 1 | 60 |  70  |
+#'  | 0  | 3 | 1 | 10 | 3452 |
+#'  | 1  | 1 | 1 | 56 | 3274 |
+#'  | 1  | 2 | 1 | 89 | 3601 |
+#'  | 1  | 3 | 1 | 56 | 3274 |
+#'  
 #' @examples
 #' CSR_Simulation(DaTa = CSR_data)
 #' CSR_Simulation(DaTa = CSR_data, NSim = 10000, p_adj = "BH")
@@ -395,7 +443,7 @@ CSR_Simulation <- function(DaTa, NSim, p_adj, v.equal, p.value.cutoff, Parallel,
     if(missing(NuLl.test)) v.equal <- FALSE
     if(missing(Keep_data)) p.value.cutoff <- 0.05
     if(missing(Parallel)) Parallel <- TRUE
-    if(rowSums(DaTa[1,c(-1,-2)] <= 1)) DaTa[,c(-1,-2)] <- DaTa[,c(-1,-2)]*100000
+    if(rowSums(DaTa[1,c(-1,-2)] <= 1) | rowSums(DaTa[1,c(-1,-2)] <= 100)) DaTa[,c(-1,-2)] <- DaTa[,c(-1,-2)]*100000
 
     message(paste("CSR assignment with", NSim, "iterations and", p_adj, "as P-value correction method\n"))
     CSR_Sim <- vector(mode = "list", length = 0)

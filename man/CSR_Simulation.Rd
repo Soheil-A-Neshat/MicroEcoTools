@@ -42,13 +42,14 @@ This function returns a table containing the pairwise statistical comparison res
 
 The input data sample:
 
-| Exp.Grp | Reactor | TAXA | Count |
+| Exp.Grp | Reactor | TAXA1 | TAXA2 |
 |-----------|:-----------:|:-----------:|-----------:|
- | I  | 1 | 1 | rk1 |  68  |
- | I  | 2 | 1 | rk1 |  70  |
- | X0 | 1 | 1 | rk1 | 3452 |
- | X0 | 3 | 1 | rk1 | 3274 |
- | X0 | 3 | 1 | rk1 | 3601 |
+ | 0  | 1 | 1 | 50 |  68  |
+ | 0  | 2 | 1 | 60 |  70  |
+ | 0  | 3 | 1 | 10 | 3452 |
+ | 1  | 1 | 1 | 56 | 3274 |
+ | 1  | 2 | 1 | 89 | 3601 |
+ | 1  | 3 | 1 | 56 | 3274 |
 }
 \description{
 This function assigns CSR categories to the input variables using the output table from the ?pairwise_welch function.

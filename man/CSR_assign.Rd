@@ -5,7 +5,7 @@
 \title{Theoretical Microbial Ecology Tools (MicroEcoTools)
 Assigning CSR categories from Grime's framework to the input variable}
 \usage{
-CSR_assign(dAtA, var.name, count_input)
+CSR_assign(dAtA, var.name, p_adj, p.value.cutoff, Parallel)
 }
 \arguments{
 \item{dAtA}{Dataframe that contains experimental group, replicates, and parameters.}
@@ -14,23 +14,24 @@ CSR_assign(dAtA, var.name, count_input)
 
 \item{p_adj}{P-value adjustment method. All methods mentioned in ?p.adjust function can be used ("BH", "BY", "holm", "hommel" or "none").}
 
-\item{v.equal}{Assumption of equal variance can be forced using this parameter. By default it is set to FALSE where it cannot be set to FALSE it will switch to TRUE automatically; a note will be shown in the remarks column in those cases.}
-
 \item{p.value.cutoff}{A cut-off value for calling the P-value significant can be set using this parameter. The default value is 0.05.}
 
 \item{Parallel}{Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses half of the available CPU cores to perform the calculations.}
+
+\item{v.equal}{Assumption of equal variance can be forced using this parameter. By default it is set to FALSE where it cannot be set to FALSE it will switch to TRUE automatically; a note will be shown in the remarks column in those cases.}
 }
 \value{
 This function returns a table containing the pairwise statistical comparison results. The output table can be fed into the CSR_assign function to assign CSR categories.
 The input data sample:
 
-| Exp.Grp | Reactor | TAXA | Count |
+| Exp.Grp | Reactor | TAXA1 | TAXA2 |
 |-----------|:-----------:|:-----------:|-----------:|
- | I  | 1 | 1 | rk1 |  68  |
- | I  | 2 | 1 | rk1 |  70  |
- | X0 | 1 | 1 | rk1 | 3452 |
- | X0 | 3 | 1 | rk1 | 3274 |
- | X0 | 3 | 1 | rk1 | 3601 |
+ | 0  | 1 | 1 | 50 |  68  |
+ | 0  | 2 | 1 | 60 |  70  |
+ | 0  | 3 | 1 | 10 | 3452 |
+ | 1  | 1 | 1 | 56 | 3274 |
+ | 1  | 2 | 1 | 89 | 3601 |
+ | 1  | 3 | 1 | 56 | 3274 |
 }
 \description{
 This function assigns CSR categories to the input variables using the output table from the ?pairwise_welch function.
@@ -40,7 +41,7 @@ Traits that are not differentially abundant in any groups will be assigned to th
 Please note that if the variability is lacking the group will be categorised as NA.
 }
 \examples{
-pairwise_welch(dAtA = CSR_data)
-pairwise_welch(dAtA = CSR_data, var.name = "taxa", p_adj = "BH")
-pairwise_welch(dAtA = CSR_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+CSR_assign(dAtA = CSR_data)
+CSR_assign(dAtA = CSR_data, var.name = "taxa", p_adj = "BH")
+CSR_assign(dAtA = CSR_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
 }
