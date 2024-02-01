@@ -2,17 +2,12 @@
 % Please edit documentation in R/CSR.R
 \name{CSR_Simulation}
 \alias{CSR_Simulation}
-\title{Theoretical Microbial Ecology Tools (MicroEcoTools)
-Assigning CSR categories from Grime's framework to the input variable and calculates the probability of assigning these categories using a simulation.
-This function generates simulated datasets using the input dataset that have a similar multinomial distribution.
-It is advised to use at least 1000 simulations to get more reliable results (recomended NSim = 10000).
-After performing the simulation it passes the data to the CSR_assign function to assign CSR categories.}
+\title{Theoretical Microbial Ecology Tools (MicroEcoTools)}
 \usage{
 CSR_Simulation(
   DaTa,
   NSim,
   p_adj,
-  v.equal,
   p.value.cutoff,
   Parallel,
   var.name,
@@ -27,8 +22,6 @@ CSR_Simulation(
 
 \item{p_adj}{P-value adjustment method. All methods mentioned in ?p.adjust function can be used ("BH", "BY", "holm", "hommel" or "none").}
 
-\item{v.equal}{Assumption of equal variance can be forced using this parameter. By default it is set to FALSE where it cannot be set to FALSE it will switch to TRUE automatically; a note will be shown in the remarks column in those cases.}
-
 \item{p.value.cutoff}{A cut-off value for calling the P-value significant can be set using this parameter. The default value is 0.05.}
 
 \item{Parallel}{Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses half of the available CPU cores to perform the calculations.}
@@ -36,27 +29,35 @@ CSR_Simulation(
 \item{var.name}{Variable name used for generating output table, for example, taxa, trait, function.}
 
 \item{Keep_data}{You can store the entire calculation results including the simulated communities in a list named CSR_Sim by setting this parameter to TRUE. By default it deletes the simulated data to save space.}
+
+\item{v.equal}{Assumption of equal variance can be forced using this parameter. By default it is set to FALSE where it cannot be set to FALSE it will switch to TRUE automatically; a note will be shown in the remarks column in those cases.}
 }
 \value{
 This function returns a table containing the pairwise statistical comparison results. The output table can be fed into the CSR_assign function to assign CSR categories.
-
-The input data sample:
-
-| Exp.Grp | Reactor | TAXA1 | TAXA2 |
-|-----------|:-----------:|:-----------:|-----------:|
- | 0  | 1 | 1 | 50 |  68  |
- | 0  | 2 | 1 | 60 |  70  |
- | 0  | 3 | 1 | 10 | 3452 |
- | 1  | 1 | 1 | 56 | 3274 |
- | 1  | 2 | 1 | 89 | 3601 |
- | 1  | 3 | 1 | 56 | 3274 |
 }
 \description{
+Probability prediction for the CSR assignments.
+Assigning CSR categories from Grime's framework to the input variable and calculates the probability of assigning these categories using a simulation.
+This function generates simulated datasets using the input dataset that have a similar multinomial distribution.
+It is advised to use at least 1000 simulations to get more reliable results (recomended NSim = 10000).
+After performing the simulation it passes the data to the CSR_assign function to assign CSR categories.
+
 This function assigns CSR categories to the input variables using the output table from the ?pairwise_welch function.
 To do so, it looks at the pairwise comparisons and assigns C to the ones abundant in no disturbance group, S to the ones abundant in high disturbance group, and R to the ones abundant in intermediate disturbance groups.
 It also assigns intermediate categories, CR, CS, and SR to groups that are abundant in no-disturbance and intermediate-disturbance, no-disturbance and high-disturbance, and intermediate-disturbance and high-disturbance, respectively.
 Traits that are not differentially abundant in any groups will be assigned to the CSR category.
 Please note that if the variability is lacking the group will be categorised as NA.
+}
+\details{
+The input data sample:\tabular{lcrcr}{
+   Exp.Grp \tab Reactor \tab TAXA1 \tab TAXA2 \tab TAXA3 \cr
+   X0 \tab 1 \tab 10 \tab 91 \tab 68 \cr
+   X0 \tab 2 \tab 11 \tab 86 \tab 70 \cr
+   X0 \tab 3 \tab 12 \tab 84 \tab 70 \cr
+   X1 \tab 1 \tab 15 \tab 30 \tab 3452 \cr
+   X1 \tab 2 \tab 19 \tab 45 \tab 3274 \cr
+   X1 \tab 3 \tab 13 \tab 25 \tab 3601 \cr
+}
 }
 \examples{
 CSR_Simulation(DaTa = CSR_data)

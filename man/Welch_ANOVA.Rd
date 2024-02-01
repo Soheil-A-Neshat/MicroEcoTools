@@ -2,8 +2,7 @@
 % Please edit documentation in R/CSR.R
 \name{Welch_ANOVA}
 \alias{Welch_ANOVA}
-\title{Theoretical Microbial Ecology Tools (MicroEcoTools)
-Statistical comparison for traits/taxa between experimental groups using Welch-ANOVA or ANOVA.}
+\title{Welch-ANOVA comparison (MicroEcoTools)}
 \usage{
 Welch_ANOVA(dAtA, var.name, p_adj, Parallel)
 }
@@ -18,20 +17,21 @@ Welch_ANOVA(dAtA, var.name, p_adj, Parallel)
 }
 \value{
 This function returns a table containing the statistical comparison results.
-The input data sample:
-
-| Exp.Grp | Reactor | TAXA1 | TAXA2 |
-|-----------|:-----------:|:-----------:|-----------:|
- | 0  | 1 | 1 | 50 |  68  |
- | 0  | 2 | 1 | 60 |  70  |
- | 0  | 3 | 1 | 10 | 3452 |
- | 1  | 1 | 1 | 56 | 3274 |
- | 1  | 2 | 1 | 89 | 3601 |
- | 1  | 3 | 1 | 56 | 3274 |
- 
- #' @examples
-Welch_ANOVA(dAtA = CSR_data, var.name = "taxa", p_adj = "BH", Parallel)
 }
 \description{
-This function uses oneway test assuming non-equal variance. In cases where the assumptions are not valid it chooses equal variance by automatically setting var.equal parameter to TRUE.
+Statistical comparison for traits/taxa between experimental groups using Welch-ANOVA or ANOVA. This function uses oneway test assuming non-equal variance. In cases where the assumptions are not valid it chooses equal variance by automatically setting var.equal parameter to TRUE.
+}
+\details{
+The input data sample:\tabular{lcrcr}{
+   Exp.Grp \tab Reactor \tab TAXA1 \tab TAXA2 \tab TAXA3 \cr
+   X0 \tab 1 \tab 10 \tab 91 \tab 68 \cr
+   X0 \tab 2 \tab 11 \tab 86 \tab 70 \cr
+   X0 \tab 3 \tab 12 \tab 84 \tab 70 \cr
+   X1 \tab 1 \tab 15 \tab 30 \tab 3452 \cr
+   X1 \tab 2 \tab 19 \tab 45 \tab 3274 \cr
+   X1 \tab 3 \tab 13 \tab 25 \tab 3601 \cr
+}
+}
+\examples{
+Welch_ANOVA(dAtA = CSR_data, var.name = "taxa", p_adj = "BH", Parallel)
 }

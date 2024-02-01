@@ -1,25 +1,26 @@
-#' Theoretical Microbial Ecology Tools (MicroEcoTools)
-#' Statistical comparison for traits/taxa between experimental groups using Welch-ANOVA or ANOVA.
+#' @title  Welch-ANOVA comparison (MicroEcoTools)
 #'
-#' This function uses oneway test assuming non-equal variance. In cases where the assumptions are not valid it chooses equal variance by automatically setting var.equal parameter to TRUE.
+#' @description Statistical comparison for traits/taxa between experimental groups using Welch-ANOVA or ANOVA. This function uses oneway test assuming non-equal variance. In cases where the assumptions are not valid it chooses equal variance by automatically setting var.equal parameter to TRUE.
 #'
 #' @param dAtA Dataframe that contains experimental group, replicates, and parameters.
 #' @param var.name Variable name used for generating output table, for example, taxa, trait, function.
 #' @param p_adj P-value adjustment method. All methods mentioned in ?p.adjust function can be used ("BH", "BY", "holm", "hommel" or "none").
 #' @param Parallel Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses half of the available CPU cores to perform the calculations.
 #' @return This function returns a table containing the statistical comparison results.
+#'@details
 #'The input data sample:
 #'
-#' | Exp.Grp | Reactor | TAXA1 | TAXA2 |
-#'|-----------|:-----------:|:-----------:|-----------:|
-#'  | 0  | 1 | 1 | 50 |  68  |
-#'  | 0  | 2 | 1 | 60 |  70  |
-#'  | 0  | 3 | 1 | 10 | 3452 |
-#'  | 1  | 1 | 1 | 56 | 3274 |
-#'  | 1  | 2 | 1 | 89 | 3601 |
-#'  | 1  | 3 | 1 | 56 | 3274 |
+#' | Exp.Grp | Reactor | TAXA1 | TAXA2 | TAXA3 |
+#'|-----------|:-----------:|-----------:|:-----------:|-----------:|
+#'  | X0 | 1 | 10 | 91 | 68 |
+#'  | X0 | 2 | 11 | 86 | 70 |
+#'  | X0 | 3 | 12 | 84 | 70 |
+#'  | X1 | 1 | 15 | 30 | 3452 |
+#'  | X1 | 2 | 19 | 45 | 3274 |
+#'  | X1 | 3 | 13 | 25 | 3601 |
+#'@md
 #'  
-#'  #' @examples
+#' @examples
 #' Welch_ANOVA(dAtA = CSR_data, var.name = "taxa", p_adj = "BH", Parallel)
 #' @export
 Welch_ANOVA <- function(dAtA, var.name, p_adj, Parallel){
@@ -80,10 +81,9 @@ Welch_ANOVA <- function(dAtA, var.name, p_adj, Parallel){
     return(a)
   }}
 
-#' Theoretical Microbial Ecology Tools (MicroEcoTools)
-#' Pairwise comparison between experimental groups using Welch-ANOVA or ANOVA.
+#' @title Pairwise Welch-ANOVA (MicroEcoTools)
 #'
-#' This function uses oneway test assuming non-equal variance to perform pairwise comparison.
+#' @description Pairwise comparison between experimental groups using Welch-ANOVA or ANOVA. This function uses oneway test assuming non-equal variance to perform pairwise comparison.
 #' In cases where the assumptions are not valid it chooses equal variance by automatically setting var.equal parameter to TRUE it can be forced to use equal/not equal variance by setting v.equal to TRUE or FALSE.
 #'
 #' @param dAtA Dataframe that contains experimental group, replicates, and parameters.
@@ -97,12 +97,13 @@ Welch_ANOVA <- function(dAtA, var.name, p_adj, Parallel){
 #'
 #' | Exp.Grp | Reactor | TAXA1 | TAXA2 |
 #'|-----------|:-----------:|:-----------:|-----------:|
-#'  | 0  | 1 | 1 | 50 |  68  |
-#'  | 0  | 2 | 1 | 60 |  70  |
-#'  | 0  | 3 | 1 | 10 | 3452 |
-#'  | 1  | 1 | 1 | 56 | 3274 |
-#'  | 1  | 2 | 1 | 89 | 3601 |
-#'  | 1  | 3 | 1 | 56 | 3274 |
+#'  | 0  | 1 | 50 |  68  |
+#'  | 0  | 2 | 60 |  70  |
+#'  | 0  | 3 | 10 | 3452 |
+#'  | 1  | 1 | 56 | 3274 |
+#'  | 1  | 2 | 89 | 3601 |
+#'  | 1  | 3 | 56 | 3274 |
+#'  @md
 #'  
 #' @examples
 #' pairwise_welch(dAtA = CSR_data)
@@ -273,9 +274,8 @@ pairwise_welch <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Paral
     return(a)
   }  }
 
-#' Theoretical Microbial Ecology Tools (MicroEcoTools)
-#' Assigning CSR categories from Grime's framework to the input variable
-#'
+#' @title Competitor - Stress tolerant - Ruderal assignment (MicroEcoTools)
+#' @description Assigning CSR categories from Grime's framework to the input variable.
 #' This function assigns CSR categories to the input variables using the output table from the ?pairwise_welch function.
 #' To do so, it looks at the pairwise comparisons and assigns C to the ones abundant in no disturbance group, S to the ones abundant in high disturbance group, and R to the ones abundant in intermediate disturbance groups.
 #' It also assigns intermediate categories, CR, CS, and SR to groups that are abundant in no-disturbance and intermediate-disturbance, no-disturbance and high-disturbance, and intermediate-disturbance and high-disturbance, respectively.
@@ -288,16 +288,19 @@ pairwise_welch <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Paral
 #' @param p.value.cutoff A cut-off value for calling the P-value significant can be set using this parameter. The default value is 0.05.
 #' @param Parallel Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses half of the available CPU cores to perform the calculations.
 #' @return This function returns a table containing the pairwise statistical comparison results. The output table can be fed into the CSR_assign function to assign CSR categories.
+#' 
+#'@details
 #'The input data sample:
 #'
-#' | Exp.Grp | Reactor | TAXA1 | TAXA2 |
-#'|-----------|:-----------:|:-----------:|-----------:|
-#'  | 0  | 1 | 1 | 50 |  68  |
-#'  | 0  | 2 | 1 | 60 |  70  |
-#'  | 0  | 3 | 1 | 10 | 3452 |
-#'  | 1  | 1 | 1 | 56 | 3274 |
-#'  | 1  | 2 | 1 | 89 | 3601 |
-#'  | 1  | 3 | 1 | 56 | 3274 |
+#' | Exp.Grp | Reactor | TAXA1 | TAXA2 | TAXA3 |
+#'|-----------|:-----------:|-----------:|:-----------:|-----------:|
+#'  | X0 | 1 | 10 | 91 | 68 |
+#'  | X0 | 2 | 11 | 86 | 70 |
+#'  | X0 | 3 | 12 | 84 | 70 |
+#'  | X1 | 1 | 15 | 30 | 3452 |
+#'  | X1 | 2 | 19 | 45 | 3274 |
+#'  | X1 | 3 | 13 | 25 | 3601 |
+#'@md
 #'  
 #' @examples
 #' CSR_assign(dAtA = CSR_data)
@@ -382,7 +385,9 @@ CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel) {
     return(a)
   }}
 
-#' Theoretical Microbial Ecology Tools (MicroEcoTools)
+#' @title Theoretical Microbial Ecology Tools (MicroEcoTools)
+#' 
+#' @description Probability prediction for the CSR assignments.
 #' Assigning CSR categories from Grime's framework to the input variable and calculates the probability of assigning these categories using a simulation.
 #' This function generates simulated datasets using the input dataset that have a similar multinomial distribution.
 #' It is advised to use at least 1000 simulations to get more reliable results (recomended NSim = 10000).
@@ -393,6 +398,7 @@ CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel) {
 #' It also assigns intermediate categories, CR, CS, and SR to groups that are abundant in no-disturbance and intermediate-disturbance, no-disturbance and high-disturbance, and intermediate-disturbance and high-disturbance, respectively.
 #' Traits that are not differentially abundant in any groups will be assigned to the CSR category.
 #' Please note that if the variability is lacking the group will be categorised as NA.
+#' 
 #' @param DaTa Dataframe that contains experimental group, replicates, and parameters.
 #' @param NSim Number of simulations minimum 1000, recomended 10000.
 #' @param var.name Variable name used for generating output table, for example, taxa, trait, function.
@@ -403,16 +409,18 @@ CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel) {
 #' @param Keep_data You can store the entire calculation results including the simulated communities in a list named CSR_Sim by setting this parameter to TRUE. By default it deletes the simulated data to save space.
 #' @return This function returns a table containing the pairwise statistical comparison results. The output table can be fed into the CSR_assign function to assign CSR categories.
 #'
-#' The input data sample:
+#'@details
+#'The input data sample:
 #'
-#' | Exp.Grp | Reactor | TAXA1 | TAXA2 |
-#'|-----------|:-----------:|:-----------:|-----------:|
-#'  | 0  | 1 | 1 | 50 |  68  |
-#'  | 0  | 2 | 1 | 60 |  70  |
-#'  | 0  | 3 | 1 | 10 | 3452 |
-#'  | 1  | 1 | 1 | 56 | 3274 |
-#'  | 1  | 2 | 1 | 89 | 3601 |
-#'  | 1  | 3 | 1 | 56 | 3274 |
+#' | Exp.Grp | Reactor | TAXA1 | TAXA2 | TAXA3 |
+#'|-----------|:-----------:|-----------:|:-----------:|-----------:|
+#'  | X0 | 1 | 10 | 91 | 68 |
+#'  | X0 | 2 | 11 | 86 | 70 |
+#'  | X0 | 3 | 12 | 84 | 70 |
+#'  | X1 | 1 | 15 | 30 | 3452 |
+#'  | X1 | 2 | 19 | 45 | 3274 |
+#'  | X1 | 3 | 13 | 25 | 3601 |
+#'@md
 #'  
 #' @examples
 #' CSR_Simulation(DaTa = CSR_data)

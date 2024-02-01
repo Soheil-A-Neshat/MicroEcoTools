@@ -2,8 +2,7 @@
 % Please edit documentation in R/CSR.R
 \name{CSR_assign}
 \alias{CSR_assign}
-\title{Theoretical Microbial Ecology Tools (MicroEcoTools)
-Assigning CSR categories from Grime's framework to the input variable}
+\title{Competitor - Stress tolerant - Ruderal assignment (MicroEcoTools)}
 \usage{
 CSR_assign(dAtA, var.name, p_adj, p.value.cutoff, Parallel)
 }
@@ -22,23 +21,25 @@ CSR_assign(dAtA, var.name, p_adj, p.value.cutoff, Parallel)
 }
 \value{
 This function returns a table containing the pairwise statistical comparison results. The output table can be fed into the CSR_assign function to assign CSR categories.
-The input data sample:
-
-| Exp.Grp | Reactor | TAXA1 | TAXA2 |
-|-----------|:-----------:|:-----------:|-----------:|
- | 0  | 1 | 1 | 50 |  68  |
- | 0  | 2 | 1 | 60 |  70  |
- | 0  | 3 | 1 | 10 | 3452 |
- | 1  | 1 | 1 | 56 | 3274 |
- | 1  | 2 | 1 | 89 | 3601 |
- | 1  | 3 | 1 | 56 | 3274 |
 }
 \description{
+Assigning CSR categories from Grime's framework to the input variable.
 This function assigns CSR categories to the input variables using the output table from the ?pairwise_welch function.
 To do so, it looks at the pairwise comparisons and assigns C to the ones abundant in no disturbance group, S to the ones abundant in high disturbance group, and R to the ones abundant in intermediate disturbance groups.
 It also assigns intermediate categories, CR, CS, and SR to groups that are abundant in no-disturbance and intermediate-disturbance, no-disturbance and high-disturbance, and intermediate-disturbance and high-disturbance, respectively.
 Traits that are not differentially abundant in any groups will be assigned to the CSR category.
 Please note that if the variability is lacking the group will be categorised as NA.
+}
+\details{
+The input data sample:\tabular{lcrcr}{
+   Exp.Grp \tab Reactor \tab TAXA1 \tab TAXA2 \tab TAXA3 \cr
+   X0 \tab 1 \tab 10 \tab 91 \tab 68 \cr
+   X0 \tab 2 \tab 11 \tab 86 \tab 70 \cr
+   X0 \tab 3 \tab 12 \tab 84 \tab 70 \cr
+   X1 \tab 1 \tab 15 \tab 30 \tab 3452 \cr
+   X1 \tab 2 \tab 19 \tab 45 \tab 3274 \cr
+   X1 \tab 3 \tab 13 \tab 25 \tab 3601 \cr
+}
 }
 \examples{
 CSR_assign(dAtA = CSR_data)

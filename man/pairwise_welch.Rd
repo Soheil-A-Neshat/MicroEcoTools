@@ -2,8 +2,7 @@
 % Please edit documentation in R/CSR.R
 \name{pairwise_welch}
 \alias{pairwise_welch}
-\title{Theoretical Microbial Ecology Tools (MicroEcoTools)
-Pairwise comparison between experimental groups using Welch-ANOVA or ANOVA.}
+\title{Pairwise Welch-ANOVA (MicroEcoTools)}
 \usage{
 pairwise_welch(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Parallel)
 }
@@ -26,15 +25,16 @@ The input data sample:
 
 | Exp.Grp | Reactor | TAXA1 | TAXA2 |
 |-----------|:-----------:|:-----------:|-----------:|
- | 0  | 1 | 1 | 50 |  68  |
- | 0  | 2 | 1 | 60 |  70  |
- | 0  | 3 | 1 | 10 | 3452 |
- | 1  | 1 | 1 | 56 | 3274 |
- | 1  | 2 | 1 | 89 | 3601 |
- | 1  | 3 | 1 | 56 | 3274 |
+ | 0  | 1 | 50 |  68  |
+ | 0  | 2 | 60 |  70  |
+ | 0  | 3 | 10 | 3452 |
+ | 1  | 1 | 56 | 3274 |
+ | 1  | 2 | 89 | 3601 |
+ | 1  | 3 | 56 | 3274 |
+ @md
 }
 \description{
-This function uses oneway test assuming non-equal variance to perform pairwise comparison.
+Pairwise comparison between experimental groups using Welch-ANOVA or ANOVA. This function uses oneway test assuming non-equal variance to perform pairwise comparison.
 In cases where the assumptions are not valid it chooses equal variance by automatically setting var.equal parameter to TRUE it can be forced to use equal/not equal variance by setting v.equal to TRUE or FALSE.
 }
 \examples{

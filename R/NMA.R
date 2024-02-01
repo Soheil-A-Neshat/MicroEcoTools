@@ -1,12 +1,15 @@
 #'@title  Theoretical Microbial Ecology Tools (MicroEcoTools)
 #'
-#'@description Using a null model approach, this package tests the relative contribution of the assembly mechanisms (stochastic and deterministic) in a given community. Based on the observed communities, assuming that the community structure was randomly shaped, using a multinomial distribution, this package simulates random communities. A diversity metric will then be used to calculate the standard effect size between the observed communities and randomly generated communities.
+#'@description The tools implemented in the MicroEcoTools help researchers and practitioners to apply theoretical frameworks to community data. The current version covers theories connecting assembly mechanisms to diversity and functions. These theories are the intermediate stochasticity hypothesis which is covered in the NMA function and a trait-based framework (Grime's competitor-stress tolerant-ruderal) which is covered in the CSR functions.
 #'
 #'@author Soheil A. Neshat, Ezequiel Santillan, Stefan Wuertz
-#'@author (The NMA package was developed in Singapore Centre for Environmental Life Sciences Engineering, Nanyang Technological University, Singapore)
+#'@author (The MicroEcoTools package was developed in Singapore Centre for Environmental Life Sciences Engineering, Nanyang Technological University, Singapore)
 #'
-#'@keywords Null model analysis, community ecology
+#'@keywords Trait-based, CSR, Grime's triangle, Intermediate stochasticity hypothesis, Null model analysis, community ecology, Theoretical microbial ecology
 #'
+#'@section section title:Null model analysis (NMA) 
+#'
+#'@description Using a null model approach, this package tests the relative contribution of the assembly mechanisms (stochastic and deterministic) in a given community. Based on the observed communities, assuming that the community structure was randomly shaped, using a multinomial distribution, this package simulates random communities. A diversity metric will then be used to calculate the standard effect size between the observed communities and randomly generated communities.
 #'@param DaTa A data frame containing the environmental and community data in long format with column names of Exp.Grp, Reactor, Time_point, TAXA, and Count Please note that you need at least two replicates for each experimental group.
 #'@details
 #'The input data sample:

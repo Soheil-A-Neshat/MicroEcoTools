@@ -25,6 +25,8 @@ NMA(DaTa, NSim, InDeX, ObSsIm, p.adj, Plot_Level, Keep_Data)
 A list named NMA_Results containing the data (observed and simulated communities), results of the statistical analysis on the diversity metric between observed and simulated communities, calculated standard effect sizes and stochastic intensities, standard effect size and stochastic intensity plots using the user specified diversity metric (InDeX parameter), standard effect size and stochastic intensity plots using richness (based on Kraft et al. and Santillan et al. papers), and standard effect size plot using Cohen's d method.
 }
 \description{
+The tools implemented in the MicroEcoTools help researchers and practitioners to apply theoretical frameworks to community data. The current version covers theories connecting assembly mechanisms to diversity and functions. These theories are the intermediate stochasticity hypothesis which is covered in the NMA function and a trait-based framework (Grime's competitor-stress tolerant-ruderal) which is covered in the CSR functions.
+
 Using a null model approach, this package tests the relative contribution of the assembly mechanisms (stochastic and deterministic) in a given community. Based on the observed communities, assuming that the community structure was randomly shaped, using a multinomial distribution, this package simulates random communities. A diversity metric will then be used to calculate the standard effect size between the observed communities and randomly generated communities.
 }
 \details{
@@ -42,6 +44,10 @@ All environmental variables should be converted to factor
 
 Environmental variables accepted are Time_point, Exp.Grp, and Reactor
 }
+\section{section title}{
+Null model analysis (NMA)
+}
+
 \examples{
 NMA(DaTa = NMA_data)
 
@@ -56,10 +62,20 @@ Kraft, Nathan JB, et al. "Disentangling the drivers of β diversity along latitu
 \author{
 Soheil A. Neshat, Ezequiel Santillan, Stefan Wuertz
 
-(The NMA package was developed in Singapore Centre for Environmental Life Sciences Engineering, Nanyang Technological University, Singapore)
+(The MicroEcoTools package was developed in Singapore Centre for Environmental Life Sciences Engineering, Nanyang Technological University, Singapore)
 }
+\keyword{CSR,}
+\keyword{Grime's}
+\keyword{Intermediate}
 \keyword{Null}
+\keyword{Theoretical}
+\keyword{Trait-based,}
 \keyword{analysis,}
 \keyword{community}
 \keyword{ecology}
+\keyword{ecology,}
+\keyword{hypothesis,}
+\keyword{microbial}
 \keyword{model}
+\keyword{stochasticity}
+\keyword{triangle,}
