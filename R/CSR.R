@@ -288,6 +288,7 @@ pairwise_welch <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Paral
 #' @param v.equal Assumption of equal variance can be forced using this parameter. By default it is set to FALSE where it cannot be set to FALSE it will switch to TRUE automatically; a note will be shown in the remarks column in those cases.
 #' @param p.value.cutoff A cut-off value for calling the P-value significant can be set using this parameter. The default value is 0.05.
 #' @param Parallel Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses half of the available CPU cores to perform the calculations.
+#' @param Vis Using this parameter you can make visualize the top 5 taxa/trait sorted based on P-value or abundance. The graphs will be saved as CSR_plot_p and CSR_plot_r.
 #' @return This function returns a table containing the pairwise statistical comparison results. The output table can be fed into the CSR_assign function to assign CSR categories.
 #' 
 #'@details
