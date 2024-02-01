@@ -454,20 +454,25 @@ CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis) {
       vis_data_r <- dAtA[,c(1,2)]
       
       for (i in vis_data_list_p[,1])
-        vis_data_p <- cbind(vis_data_p, dAtA[i])
+        vis_data_p <- cbind(vis_data_p, as.data.frame(dAtA[i]))
       
       for (i in vis_data_list_r[,1])
-        vis_data_r <- cbind(vis_data_r, dAtA[i])
+        vis_data_r <- cbind(vis_data_r, as.data.frame(dAtA[i]))
       
       vis_data_p <- reshape2::melt(vis_data_p, id.vars = c(colnames(vis_data_p[1]), colnames(vis_data_p[2])), variable.name = var.name, value.name = "Abundance")
       vis_data_r <- reshape2::melt(vis_data_r, id.vars = c(colnames(vis_data_r[1]), colnames(vis_data_r[2])), variable.name = var.name, value.name = "Abundance")
       
-      CSR_plot_p <<- ggplot(vis_data_p, aes(x = as.factor(vis_data_p[,1]), y = Abundance)) +
-          geom_point() +
-          labs(title = var.name) + facet_wrap(as.formula(paste("~", var.name)), scales = "free")
-      CSR_plot_r <<- ggplot(vis_data_r, aes(x = as.factor(vis_data_r[,1]), y = Abundance)) +
-        geom_point() +
-        labs(title = var.name) + facet_wrap(as.formula(paste("~", var.name)), scales = "free")
+      CSR_plot_p <<- ggplot2::ggplot(vis_data_p, aes(x = as.factor(vis_data_p[,1]), y = Abundance)) +
+          geom_point() + theme_minimal() + theme(
+            panel.grid = element_blank(),
+            panel.background = element_rect(fill = "transparent")) +
+        labs(title = paste( "Top 5", var.name, "from C, S, R and intermediate categories sorted based on adjusted P-value")) + facet_wrap(as.formula(paste("~", var.name)), scales = "free")
+      
+      CSR_plot_r <<- ggplot2::ggplot(vis_data_r, aes(x = vis_data_r[,1], y = Abundance)) +
+        geom_point() + theme_minimal() + theme(
+          panel.grid = element_blank(),
+          panel.background = element_rect(fill = "transparent")) +
+        labs(title = paste( "Top 5", var.name, "from C, S, R and intermediate categories sorted based on abundance")) + facet_wrap(as.formula(paste("~", var.name)), scales = "free") 
       
         }
     return(a)
@@ -586,7 +591,7 @@ CSR_Simulation <- function(DaTa, NSim, p_adj, p.value.cutoff, Parallel, var.name
       rownames(CSR_Sim[[1]][[i]]) <- rownames(expected)
       CSR_Sim[[2]][[i]] <- as.data.frame(t(CSR_Sim[[1]][[i]]))
       CSR_Sim[[2]][[i]] <- cbind(DaTa[1],DaTa[2],CSR_Sim[[2]][[i]])
-      CSR_Sim[[3]][[i]] <- CSR_assign(dAtA = CSR_Sim[[2]][[i]], var.name = var.name, p_adj = p_adj ,p.value.cutoff = p.value.cutoff,Parallel = Parallel)[c(1,5)]
+      CSR_Sim[[3]][[i]] <- CSR_assign(dAtA = CSR_Sim[[2]][[i]], var.name = var.name, p_adj = p_adj ,p.value.cutoff = p.value.cutoff,Parallel = Parallel, Vis = FALSE)[c(1,5)]
       if (i == length(CSR_Sim[["data"]])) message("\nCSR assignment        ", "\u2713")
     }
     message("CSR assignment            ","\u2714","\n")

@@ -17,6 +17,8 @@ CSR_assign(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis)
 
 \item{Parallel}{Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses half of the available CPU cores to perform the calculations.}
 
+\item{Vis}{Using this parameter you can make visualize the top 5 taxa/trait sorted based on P-value or abundance. The graphs will be saved as CSR_plot_p and CSR_plot_r.}
+
 \item{v.equal}{Assumption of equal variance can be forced using this parameter. By default it is set to FALSE where it cannot be set to FALSE it will switch to TRUE automatically; a note will be shown in the remarks column in those cases.}
 }
 \value{
