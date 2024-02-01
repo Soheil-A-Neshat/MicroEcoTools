@@ -4,7 +4,7 @@
 \alias{CSR_assign}
 \title{Competitor - Stress tolerant - Ruderal assignment (MicroEcoTools)}
 \usage{
-CSR_assign(dAtA, var.name, p_adj, p.value.cutoff, Parallel)
+CSR_assign(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis)
 }
 \arguments{
 \item{dAtA}{Dataframe that contains experimental group, replicates, and parameters.}
