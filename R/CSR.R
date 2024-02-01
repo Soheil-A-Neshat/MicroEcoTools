@@ -93,17 +93,18 @@ Welch_ANOVA <- function(dAtA, var.name, p_adj, Parallel){
 #' @param p.value.cutoff A cut-off value for calling the P-value significant can be set using this parameter. The default value is 0.05.
 #' @param Parallel Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses half of the available CPU cores to perform the calculations.
 #' @return This function returns a table containing the pairwise statistical comparison results. The output table can be fed into the CSR_assign function to assign CSR categories.
+#' @details
 #'The input data sample:
 #'
-#' | Exp.Grp | Reactor | TAXA1 | TAXA2 |
-#'|-----------|:-----------:|:-----------:|-----------:|
-#'  | 0  | 1 | 50 |  68  |
-#'  | 0  | 2 | 60 |  70  |
-#'  | 0  | 3 | 10 | 3452 |
-#'  | 1  | 1 | 56 | 3274 |
-#'  | 1  | 2 | 89 | 3601 |
-#'  | 1  | 3 | 56 | 3274 |
-#'  @md
+#' | Exp.Grp | Reactor | TAXA1 | TAXA2 | TAXA3 |
+#'|-----------|:-----------:|-----------:|:-----------:|-----------:|
+#'  | X0 | 1 | 10 | 91 | 68 |
+#'  | X0 | 2 | 11 | 86 | 70 |
+#'  | X0 | 3 | 12 | 84 | 70 |
+#'  | X1 | 1 | 15 | 30 | 3452 |
+#'  | X1 | 2 | 19 | 45 | 3274 |
+#'  | X1 | 3 | 13 | 25 | 3601 |
+#' @md
 #'  
 #' @examples
 #' pairwise_welch(dAtA = CSR_data)
@@ -307,12 +308,13 @@ pairwise_welch <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Paral
 #' CSR_assign(dAtA = CSR_data, var.name = "taxa", p_adj = "BH")
 #' CSR_assign(dAtA = CSR_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
 #' @export
-CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel) {
+CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis) {
   if(missing(dAtA)) print("No data input!") else {
     if(missing(var.name)) var.name <- "Trait"
     if(missing(p_adj)) p_adj <- "BH"
     if(missing(p.value.cutoff)) p.value.cutoff <- 0.05
     if(missing(Parallel)) Parallel <- TRUE
+    if(missing(Vis)) Vis <- TRUE
     j=1
     wa <- Welch_ANOVA(dAtA = dAtA, var.name = var.name, p_adj = "BH")
     if (colnames(dAtA[2]) != "P1"){
@@ -382,6 +384,91 @@ CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel) {
 
     colnames(a) <- c(paste(var.name), "CSR categories", "Remarks_CSR")
     a <- merge(wa[, c(1, 2, 3, 5)], a, all.x = TRUE)
+    if(Vis == TRUE){
+      vis_data_C <- a[which(a[,5] == "C" ),]
+      j = 1
+      for (i in vis_data_C[,1]){
+        vis_data_C[j,"mean_rel"] <- mean(dAtA[[i]])
+        j=j+1}
+      vis_data_C_p <- vis_data_C[order(vis_data_C$`adjusted Welch-ANOVA p-value`),]
+      vis_data_C_r <- vis_data_C[order(vis_data_C$`mean_rel`, decreasing = TRUE),]
+      if (nrow(vis_data_C) > 5) {
+        vis_data_C_p <- vis_data_C_p[1:5, ]
+        vis_data_C_r <- vis_data_C_r[1:5, ]}
+      vis_data_S <- a[which(a[,5] == "S" ),]
+      j = 1
+      for (i in vis_data_S[,1]){
+        vis_data_S[j,"mean_rel"] <- mean(dAtA[[i]])
+        j=j+1}
+      vis_data_S_p <- vis_data_S[order(vis_data_S$`adjusted Welch-ANOVA p-value`),]
+      vis_data_S_r <- vis_data_S[order(vis_data_S$`mean_rel`, decreasing = TRUE),]
+      if (nrow(vis_data_S) > 5) {
+        vis_data_S_p <- vis_data_S_p[1:5, ]
+        vis_data_S_r <- vis_data_S_r[1:5, ]}
+      vis_data_R <- a[which(a[,5] == "R" ),]
+      j = 1
+      for (i in vis_data_R[,1]){
+        vis_data_R[j,"mean_rel"] <- mean(dAtA[[i]])
+        j=j+1}
+      vis_data_R_p <- vis_data_R[order(vis_data_R$`adjusted Welch-ANOVA p-value`),]
+      vis_data_R_r <- vis_data_R[order(vis_data_R$`mean_rel`, decreasing = TRUE),]
+      if (nrow(vis_data_R) > 5) {
+        vis_data_R_p <- vis_data_R_p[1:5, ]
+        vis_data_R_r <- vis_data_R_r[1:5, ]}
+      vis_data_CS <- a[which(a[,5] == "CS" ),]
+      j = 1
+      for (i in vis_data_CS[,1]){
+        vis_data_CS[j,"mean_rel"] <- mean(dAtA[[i]])
+        j=j+1}
+      vis_data_CS_p <- vis_data_CS[order(vis_data_CS$`adjusted Welch-ANOVA p-value`),]
+      vis_data_CS_r <- vis_data_CS[order(vis_data_CS$`mean_rel`, decreasing = TRUE),]
+      if (nrow(vis_data_CS) > 5) {
+        vis_data_CS_p <- vis_data_CS_p[1:5, ]
+        vis_data_CS_r <- vis_data_CS_r[1:5, ]}
+      vis_data_SR <- a[which(a[,5] == "SR" ),]
+      j = 1
+      for (i in vis_data_SR[,1]){
+        vis_data_SR[j,"mean_rel"] <- mean(dAtA[[i]])
+        j=j+1}
+      vis_data_SR_p <- vis_data_SR[order(vis_data_SR$`adjusted Welch-ANOVA p-value`),]
+      vis_data_SR_r <- vis_data_SR[order(vis_data_SR$`mean_rel`, decreasing = TRUE),]
+      if (nrow(vis_data_SR) > 5) {
+        vis_data_SR_p <- vis_data_SR_p[1:5, ]
+        vis_data_SR_r <- vis_data_SR_r[1:5, ]}
+      vis_data_CR <- a[which(a[,5] == "CR" ),]
+      j = 1
+      for (i in vis_data_CR[,1]){
+        vis_data_CR[j,"mean_rel"] <- mean(dAtA[[i]])
+        j=j+1}
+      vis_data_CR_p <- vis_data_CR[order(vis_data_CR$`adjusted Welch-ANOVA p-value`),]
+      vis_data_CR_r <- vis_data_CR[order(vis_data_CR$`mean_rel`, decreasing = TRUE),]
+      if (nrow(vis_data_CR) > 5) {
+        vis_data_CR_p <- vis_data_CR_p[1:5, ]
+        vis_data_CR_r <- vis_data_CR_r[1:5, ]}
+      
+      vis_data_list_p <- as.data.frame(rbind(vis_data_C_p, vis_data_S_p, vis_data_R_p, vis_data_CS_p, vis_data_CR_p, vis_data_SR_p))[1]
+      vis_data_list_r <- as.data.frame(rbind(vis_data_C_r, vis_data_S_r, vis_data_R_r, vis_data_CS_r, vis_data_CR_r, vis_data_SR_r))[1]
+      
+      vis_data_p <- dAtA[,c(1,2)]
+      vis_data_r <- dAtA[,c(1,2)]
+      
+      for (i in vis_data_list_p[,1])
+        vis_data_p <- cbind(vis_data_p, dAtA[i])
+      
+      for (i in vis_data_list_r[,1])
+        vis_data_r <- cbind(vis_data_r, dAtA[i])
+      
+      vis_data_p <- reshape2::melt(vis_data_p, id.vars = c(colnames(vis_data_p[1]), colnames(vis_data_p[2])), variable.name = var.name, value.name = "Abundance")
+      vis_data_r <- reshape2::melt(vis_data_r, id.vars = c(colnames(vis_data_r[1]), colnames(vis_data_r[2])), variable.name = var.name, value.name = "Abundance")
+      
+      CSR_plot_p <<- ggplot(vis_data_p, aes(x = as.factor(vis_data_p[,1]), y = Abundance)) +
+          geom_point() +
+          labs(title = var.name) + facet_wrap(as.formula(paste("~", var.name)), scales = "free")
+      CSR_plot_r <<- ggplot(vis_data_r, aes(x = as.factor(vis_data_r[,1]), y = Abundance)) +
+        geom_point() +
+        labs(title = var.name) + facet_wrap(as.formula(paste("~", var.name)), scales = "free")
+      
+        }
     return(a)
   }}
 

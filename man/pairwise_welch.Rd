@@ -21,21 +21,21 @@ pairwise_welch(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Parallel)
 }
 \value{
 This function returns a table containing the pairwise statistical comparison results. The output table can be fed into the CSR_assign function to assign CSR categories.
-The input data sample:
-
-| Exp.Grp | Reactor | TAXA1 | TAXA2 |
-|-----------|:-----------:|:-----------:|-----------:|
- | 0  | 1 | 50 |  68  |
- | 0  | 2 | 60 |  70  |
- | 0  | 3 | 10 | 3452 |
- | 1  | 1 | 56 | 3274 |
- | 1  | 2 | 89 | 3601 |
- | 1  | 3 | 56 | 3274 |
- @md
 }
 \description{
 Pairwise comparison between experimental groups using Welch-ANOVA or ANOVA. This function uses oneway test assuming non-equal variance to perform pairwise comparison.
 In cases where the assumptions are not valid it chooses equal variance by automatically setting var.equal parameter to TRUE it can be forced to use equal/not equal variance by setting v.equal to TRUE or FALSE.
+}
+\details{
+The input data sample:\tabular{lcrcr}{
+   Exp.Grp \tab Reactor \tab TAXA1 \tab TAXA2 \tab TAXA3 \cr
+   X0 \tab 1 \tab 10 \tab 91 \tab 68 \cr
+   X0 \tab 2 \tab 11 \tab 86 \tab 70 \cr
+   X0 \tab 3 \tab 12 \tab 84 \tab 70 \cr
+   X1 \tab 1 \tab 15 \tab 30 \tab 3452 \cr
+   X1 \tab 2 \tab 19 \tab 45 \tab 3274 \cr
+   X1 \tab 3 \tab 13 \tab 25 \tab 3601 \cr
+}
 }
 \examples{
 pairwise_welch(dAtA = CSR_data)
