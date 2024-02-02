@@ -288,7 +288,7 @@ pairwise_welch <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Paral
 #' @param v.equal Assumption of equal variance can be forced using this parameter. By default it is set to FALSE where it cannot be set to FALSE it will switch to TRUE automatically; a note will be shown in the remarks column in those cases.
 #' @param p.value.cutoff A cut-off value for calling the P-value significant can be set using this parameter. The default value is 0.05.
 #' @param Parallel Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses half of the available CPU cores to perform the calculations.
-#' @param Vis Using this parameter you can make visualize the top 5 taxa/trait sorted based on P-value or abundance. The graphs will be saved as CSR_plot_p and CSR_plot_r.
+#' @param Vis Using this parameter you can make visualize the top 5 taxa/trait sorted based on P-value or abundance. The graphs will be saved as CSR_plot_sorted_p_value and CSR_plot_sorted_abundance.
 #' @return This function returns a table containing the pairwise statistical comparison results. The output table can be fed into the CSR_assign function to assign CSR categories.
 #' 
 #'@details
@@ -317,6 +317,7 @@ CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis) {
     if(missing(Parallel)) Parallel <- TRUE
     if(missing(Vis)) Vis <- TRUE
     j=1
+    DaTa <- dAtA
     wa <- Welch_ANOVA(dAtA = dAtA, var.name = var.name, p_adj = "BH")
     if (colnames(dAtA[2]) != "P1"){
       message("  Creating the pairwise Welch-ANOVA table from the input data using pairwise_welch function ...")
@@ -447,36 +448,31 @@ CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis) {
         vis_data_CR_p <- vis_data_CR_p[1:5, ]
         vis_data_CR_r <- vis_data_CR_r[1:5, ]}
       
-      vis_data_list_p <- as.data.frame(rbind(vis_data_C_p, vis_data_S_p, vis_data_R_p, vis_data_CS_p, vis_data_CR_p, vis_data_SR_p))[1]
-      vis_data_list_r <- as.data.frame(rbind(vis_data_C_r, vis_data_S_r, vis_data_R_r, vis_data_CS_r, vis_data_CR_r, vis_data_SR_r))[1]
-      
-      vis_data_p <- dAtA[,c(1,2)]
-      vis_data_r <- dAtA[,c(1,2)]
-      
-      for (i in vis_data_list_p[,1])
-        vis_data_p <- cbind(vis_data_p, as.data.frame(dAtA[i]))
-      
-      for (i in vis_data_list_r[,1])
-        vis_data_r <- cbind(vis_data_r, as.data.frame(dAtA[i]))
-      
-      vis_data_p <- reshape2::melt(vis_data_p, id.vars = c(colnames(vis_data_p[1]), colnames(vis_data_p[2])), variable.name = var.name, value.name = "Abundance")
-      vis_data_r <- reshape2::melt(vis_data_r, id.vars = c(colnames(vis_data_r[1]), colnames(vis_data_r[2])), variable.name = var.name, value.name = "Abundance")
-      
-      CSR_plot_p <<- ggplot2::ggplot(vis_data_p, aes(x = as.factor(vis_data_p[,1]), y = Abundance)) +
-          geom_point() + theme_minimal() + theme(
-            panel.grid = element_blank(),
-            panel.background = element_rect(fill = "transparent")) +
-        labs(title = paste( "Top 5", var.name, "from C, S, R and intermediate categories sorted based on adjusted P-value")) + facet_wrap(as.formula(paste("~", var.name)), scales = "free")
-      
-      CSR_plot_r <<- ggplot2::ggplot(vis_data_r, aes(x = vis_data_r[,1], y = Abundance)) +
-        geom_point() + theme_minimal() + theme(
-          panel.grid = element_blank(),
-          panel.background = element_rect(fill = "transparent")) +
-        labs(title = paste( "Top 5", var.name, "from C, S, R and intermediate categories sorted based on abundance")) + facet_wrap(as.formula(paste("~", var.name)), scales = "free") 
-      
+      vis_data_list_p <- rbind(vis_data_C_p, vis_data_S_p, vis_data_R_p, vis_data_CS_p, vis_data_CR_p, vis_data_SR_p)[,1]
+      vis_data_list_r <- rbind(vis_data_C_r, vis_data_S_r, vis_data_R_r, vis_data_CS_r, vis_data_CR_r, vis_data_SR_r)[,1]
+      CSR_plot_sorted_abundance <<- CSR_Plot(DaTa = DaTa, CSR_cat = a, CSR_vis_list = vis_data_list_r, var.name = var.name,  sort.var = "abundance")
+      CSR_plot_sorted_p_value <<- CSR_Plot(DaTa = DaTa, CSR_cat = a, CSR_vis_list = vis_data_list_p, var.name = var.name, sort.var = "adjusted P-value")
         }
     return(a)
   }}
+
+CSR_Plot <- function(DaTa, CSR_vis_list, CSR_cat, var.name, sort.var){
+  CSR_plot_variable <- var.name
+  vis_data_m <- DaTa[,c(1,2)]
+  
+  vis_data <- DaTa %>% select(all_of(CSR_vis_list))
+  vis_data <- cbind(vis_data_m, vis_data)
+  
+  vis_data <- reshape2::melt(vis_data, id.vars = c(colnames(vis_data[1]), colnames(vis_data[2])), variable.name = CSR_plot_variable, value.name = "Abundance")
+  vis_data <<- merge(vis_data, CSR_cat[,c(1,5)], all.x = TRUE)
+
+CSR_plot <- ggplot2::ggplot(vis_data, aes(x = as.factor(vis_data[,2]), y = Abundance, color = as.factor(vis_data[,5]))) +
+  geom_point() + theme_minimal() + theme(
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "transparent")) +
+  labs(title = paste( "Top 5", CSR_plot_variable, "from C, S, R and intermediate categories sorted based on", sort.var)) + facet_wrap(as.formula(paste("~", CSR_plot_variable)), scales = "free")
+CSR_plot
+}
 
 #' @title Theoretical Microbial Ecology Tools (MicroEcoTools)
 #' 
