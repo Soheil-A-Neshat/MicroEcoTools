@@ -327,8 +327,7 @@ CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis) {
     
     
     filtered_dAtA <- dAtA[which(dAtA[,2]==unique(dAtA[,2])[1] | dAtA[,3]==unique(dAtA[,3])[length(unique(dAtA[,3]))]),]
-
-
+    
     a <- data.frame(matrix(nrow = length(unique(filtered_dAtA[,1])), ncol = 3))
     rownames(a) <- unique(filtered_dAtA[,1])
     a[,1] <- rownames(a)
@@ -386,93 +385,126 @@ CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis) {
 
     colnames(a) <- c(paste(var.name), "CSR categories", "Remarks_CSR")
     a <- merge(wa[, c(1, 2, 3, 5)], a, all.x = TRUE)
+    vis_data_C_p <- data.frame()
+    vis_data_S_p <- data.frame()
+    vis_data_R_p <- data.frame()
+    vis_data_CS_p <- data.frame()
+    vis_data_CR_p <- data.frame()
+    vis_data_SR_p <- data.frame()
+    vis_data_C_r <- data.frame()
+    vis_data_S_r <- data.frame()
+    vis_data_R_r <- data.frame()
+    vis_data_CS_r <- data.frame()
+    vis_data_CR_r <- data.frame()
+    vis_data_SR_r <- data.frame()
     if(Vis == TRUE){
       vis_data_C <- a[which(a[,5] == "C" ),]
+      if(length (vis_data_C[,1]) > 0){
       j = 1
       for (i in vis_data_C[,1]){
-        vis_data_C[j,"mean_rel"] <- mean(dAtA[[i]])
+        vis_data_C[j,"mean_rel"] <- mean(dAtA[[i]], na.rm = TRUE)
         j=j+1}
       vis_data_C_p <- vis_data_C[order(vis_data_C$`adjusted Welch-ANOVA p-value`),]
       vis_data_C_r <- vis_data_C[order(vis_data_C$`mean_rel`, decreasing = TRUE),]
       if (nrow(vis_data_C) > 5) {
         vis_data_C_p <- vis_data_C_p[1:5, ]
         vis_data_C_r <- vis_data_C_r[1:5, ]}
+      }
       vis_data_S <- a[which(a[,5] == "S" ),]
+      if(length (vis_data_S[,1]) > 0){
       j = 1
       for (i in vis_data_S[,1]){
-        vis_data_S[j,"mean_rel"] <- mean(dAtA[[i]])
+        vis_data_S[j,"mean_rel"] <- mean(dAtA[[i]], na.rm = TRUE)
         j=j+1}
       vis_data_S_p <- vis_data_S[order(vis_data_S$`adjusted Welch-ANOVA p-value`),]
       vis_data_S_r <- vis_data_S[order(vis_data_S$`mean_rel`, decreasing = TRUE),]
       if (nrow(vis_data_S) > 5) {
         vis_data_S_p <- vis_data_S_p[1:5, ]
         vis_data_S_r <- vis_data_S_r[1:5, ]}
+      }
       vis_data_R <- a[which(a[,5] == "R" ),]
+      if(length (vis_data_R[,1]) > 0){
       j = 1
       for (i in vis_data_R[,1]){
-        vis_data_R[j,"mean_rel"] <- mean(dAtA[[i]])
+        vis_data_R[j,"mean_rel"] <- mean(dAtA[[i]], na.rm = TRUE)
         j=j+1}
       vis_data_R_p <- vis_data_R[order(vis_data_R$`adjusted Welch-ANOVA p-value`),]
       vis_data_R_r <- vis_data_R[order(vis_data_R$`mean_rel`, decreasing = TRUE),]
       if (nrow(vis_data_R) > 5) {
         vis_data_R_p <- vis_data_R_p[1:5, ]
         vis_data_R_r <- vis_data_R_r[1:5, ]}
+      }
       vis_data_CS <- a[which(a[,5] == "CS" ),]
+      if(length (vis_data_CS[,1]) > 0){
       j = 1
       for (i in vis_data_CS[,1]){
-        vis_data_CS[j,"mean_rel"] <- mean(dAtA[[i]])
+        vis_data_CS[j,"mean_rel"] <- mean(dAtA[[i]], na.rm = TRUE)
         j=j+1}
       vis_data_CS_p <- vis_data_CS[order(vis_data_CS$`adjusted Welch-ANOVA p-value`),]
-      vis_data_CS_r <- vis_data_CS[order(vis_data_CS$`mean_rel`, decreasing = TRUE),]
+      vis_data_CS_r <- vis_data_CS[order(as.vector(vis_data_CS$`mean_rel`), decreasing = TRUE),]
       if (nrow(vis_data_CS) > 5) {
         vis_data_CS_p <- vis_data_CS_p[1:5, ]
         vis_data_CS_r <- vis_data_CS_r[1:5, ]}
+      }
       vis_data_SR <- a[which(a[,5] == "SR" ),]
+      if(length (vis_data_SR[,1]) > 0){
       j = 1
       for (i in vis_data_SR[,1]){
-        vis_data_SR[j,"mean_rel"] <- mean(dAtA[[i]])
+        vis_data_SR[j,"mean_rel"] <- mean(dAtA[[i]], na.rm = TRUE)
         j=j+1}
       vis_data_SR_p <- vis_data_SR[order(vis_data_SR$`adjusted Welch-ANOVA p-value`),]
       vis_data_SR_r <- vis_data_SR[order(vis_data_SR$`mean_rel`, decreasing = TRUE),]
       if (nrow(vis_data_SR) > 5) {
         vis_data_SR_p <- vis_data_SR_p[1:5, ]
         vis_data_SR_r <- vis_data_SR_r[1:5, ]}
+      }
       vis_data_CR <- a[which(a[,5] == "CR" ),]
+      if(length (vis_data_CR[,1]) > 0){
       j = 1
       for (i in vis_data_CR[,1]){
-        vis_data_CR[j,"mean_rel"] <- mean(dAtA[[i]])
+        vis_data_CR[j,"mean_rel"] <- mean(dAtA[[i]], na.rm = TRUE)
         j=j+1}
       vis_data_CR_p <- vis_data_CR[order(vis_data_CR$`adjusted Welch-ANOVA p-value`),]
       vis_data_CR_r <- vis_data_CR[order(vis_data_CR$`mean_rel`, decreasing = TRUE),]
       if (nrow(vis_data_CR) > 5) {
         vis_data_CR_p <- vis_data_CR_p[1:5, ]
         vis_data_CR_r <- vis_data_CR_r[1:5, ]}
-      
+      }
       vis_data_list_p <- rbind(vis_data_C_p, vis_data_S_p, vis_data_R_p, vis_data_CS_p, vis_data_CR_p, vis_data_SR_p)[,1]
       vis_data_list_r <- rbind(vis_data_C_r, vis_data_S_r, vis_data_R_r, vis_data_CS_r, vis_data_CR_r, vis_data_SR_r)[,1]
+      
+      CSR_Plot <- function(DaTa, CSR_vis_list, CSR_cat, var.name, sort.var){
+        CSR_plot_variable <- var.name
+        vis_data_m <- DaTa[,c(1,2)]
+        
+        vis_data <- DaTa %>% select(all_of(CSR_vis_list))
+        vis_data <- cbind(vis_data_m, vis_data)
+        CSR_cat_filtered <<- CSR_cat[,c(1,5)]
+        vis_data_0 <<- reshape2::melt(vis_data, id.vars = c(colnames(vis_data[1]), colnames(vis_data[2])), variable.name = CSR_plot_variable, value.name = "Abundance")
+        str(vis_data_0)
+        str(CSR_cat_filtered)
+        vis_data <- merge(vis_data_0, CSR_cat_filtered, all.x = TRUE)
+        str(vis_data)
+        names(vis_data) <- c(var.name, "Exp.Grp", "Rep", "Abundance", "CSR_categories")
+        vis_data$Exp.Grp <- as.factor(vis_data$Exp.Grp)
+        vis_data <<-vis_data
+        
+        CSR_plot <- ggplot2::ggplot(vis_data, aes(x = Exp.Grp, y = Abundance, color = CSR_categories)) +
+          geom_point() + theme_minimal() + theme(
+            panel.grid = element_blank(),
+            panel.background = element_rect(fill = "transparent")) +
+          labs(title = paste( "Top 5", CSR_plot_variable, "from C, S, R and intermediate categories sorted based on", sort.var)) + facet_wrap(as.formula(paste("~", CSR_plot_variable)), scales = "free")
+        CSR_plot
+      }
+      
       CSR_plot_sorted_abundance <<- CSR_Plot(DaTa = DaTa, CSR_cat = a, CSR_vis_list = vis_data_list_r, var.name = var.name,  sort.var = "abundance")
       CSR_plot_sorted_p_value <<- CSR_Plot(DaTa = DaTa, CSR_cat = a, CSR_vis_list = vis_data_list_p, var.name = var.name, sort.var = "adjusted P-value")
-        }
+    }
+
     return(a)
   }}
 
-CSR_Plot <- function(DaTa, CSR_vis_list, CSR_cat, var.name, sort.var){
-  CSR_plot_variable <- var.name
-  vis_data_m <- DaTa[,c(1,2)]
-  
-  vis_data <- DaTa %>% select(all_of(CSR_vis_list))
-  vis_data <- cbind(vis_data_m, vis_data)
-  
-  vis_data <- reshape2::melt(vis_data, id.vars = c(colnames(vis_data[1]), colnames(vis_data[2])), variable.name = CSR_plot_variable, value.name = "Abundance")
-  vis_data <<- merge(vis_data, CSR_cat[,c(1,5)], all.x = TRUE)
 
-CSR_plot <- ggplot2::ggplot(vis_data, aes(x = as.factor(vis_data[,2]), y = Abundance, color = as.factor(vis_data[,5]))) +
-  geom_point() + theme_minimal() + theme(
-    panel.grid = element_blank(),
-    panel.background = element_rect(fill = "transparent")) +
-  labs(title = paste( "Top 5", CSR_plot_variable, "from C, S, R and intermediate categories sorted based on", sort.var)) + facet_wrap(as.formula(paste("~", CSR_plot_variable)), scales = "free")
-CSR_plot
-}
 
 #' @title Theoretical Microbial Ecology Tools (MicroEcoTools)
 #' 
