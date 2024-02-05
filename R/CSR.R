@@ -479,15 +479,15 @@ CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis) {
         
         vis_data <- DaTa %>% select(all_of(CSR_vis_list))
         vis_data <- cbind(vis_data_m, vis_data)
-        CSR_cat_filtered <<- CSR_cat[,c(1,5)]
-        vis_data_0 <<- reshape2::melt(vis_data, id.vars = c(colnames(vis_data[1]), colnames(vis_data[2])), variable.name = CSR_plot_variable, value.name = "Abundance")
+        CSR_cat_filtered <- CSR_cat[,c(1,5)]
+        vis_data_0 <- reshape2::melt(vis_data, id.vars = c(colnames(vis_data[1]), colnames(vis_data[2])), variable.name = CSR_plot_variable, value.name = "Abundance")
         str(vis_data_0)
         str(CSR_cat_filtered)
         vis_data <- merge(vis_data_0, CSR_cat_filtered, all.x = TRUE)
         str(vis_data)
         names(vis_data) <- c(var.name, "Exp.Grp", "Rep", "Abundance", "CSR_categories")
         vis_data$Exp.Grp <- as.factor(vis_data$Exp.Grp)
-        vis_data <<-vis_data
+        vis_data <-vis_data
         
         CSR_plot <- ggplot2::ggplot(vis_data, aes(x = Exp.Grp, y = Abundance, color = CSR_categories)) +
           geom_point() + theme_minimal() + theme(
