@@ -592,7 +592,8 @@ CSR_Simulation <- function(DaTa, NSim, p_adj, p.value.cutoff, Parallel, var.name
     CSR_Sim[["CSR"]] <- vector(mode = "list", length = 0)
     CSR_Sim[["Verdict"]] <- vector(mode = "list", length = 0)
     CSR_Sim[["Final_Verdict"]] <- vector(mode = "list", length = 0)
-
+    
+    DaTa <- DaTa[complete.cases(DaTa),]
     InPuT <- DaTa
     InPuT <- as.data.frame(t(InPuT))
     InPuT <- InPuT[c(-1,-2),]
@@ -602,8 +603,6 @@ CSR_Simulation <- function(DaTa, NSim, p_adj, p.value.cutoff, Parallel, var.name
     expected <- ceiling(expected)
     rownames(expected) <- rownames(InPuT)
     expected <- expected[which(rowSums(expected) > 0),]
-
-
 
     message("Starting the simulation\n")
     if (NuLl.test == FALSE){
