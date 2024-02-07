@@ -60,7 +60,10 @@ The input data sample:\tabular{lcrcr}{
 }
 }
 \examples{
-CSR_Simulation(DaTa = CSR_data)
-CSR_Simulation(DaTa = CSR_data, NSim = 10000, p_adj = "BH")
-CSR_Simulation(DaTa = CSR_data, NSim = 10000, p_adj = "BH", var.name = "TAXA", NuLl.test = FALSE, Keep_data = FALSE)
+CSR_Simulation(DaTa = CSR_IP2G_data)
+CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 10000, p_adj = "BH")
+CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 10000, p_adj = "BH", var.name = "TAXA", NuLl.test = FALSE, Keep_data = FALSE)
+CSR_Simulation(DaTa = CSR_TAXA_data)
+CSR_Simulation(DaTa = CSR_TAXA_data, NSim = 10000, p_adj = "BH")
+CSR_Simulation(DaTa = CSR_TAXA_data, NSim = 10000, p_adj = "BH", var.name = "TAXA", NuLl.test = FALSE, Keep_data = FALSE)
 }

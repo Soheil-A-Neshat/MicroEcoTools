@@ -38,7 +38,10 @@ The input data sample:\tabular{lcrcr}{
 }
 }
 \examples{
-pairwise_welch(dAtA = CSR_data)
-pairwise_welch(dAtA = CSR_data, var.name = "taxa", p_adj = "BH")
-pairwise_welch(dAtA = CSR_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+pairwise_welch(dAtA = CSR_IP2G_data)
+pairwise_welch(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH")
+pairwise_welch(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+pairwise_welch(dAtA = CSR_TAXA_data)
+pairwise_welch(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH")
+pairwise_welch(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
 }

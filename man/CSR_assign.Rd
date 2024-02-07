@@ -44,7 +44,10 @@ The input data sample:\tabular{lcrcr}{
 }
 }
 \examples{
-CSR_assign(dAtA = CSR_data)
-CSR_assign(dAtA = CSR_data, var.name = "taxa", p_adj = "BH")
-CSR_assign(dAtA = CSR_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+CSR_assign(dAtA = CSR_IP2G_data)
+CSR_assign(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH")
+CSR_assign(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+CSR_assign(dAtA = CSR_TAXA_data)
+CSR_assign(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH")
+CSR_assign(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
 }

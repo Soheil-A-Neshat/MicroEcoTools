@@ -21,7 +21,8 @@
 #'@md
 #'  
 #' @examples
-#' Welch_ANOVA(dAtA = CSR_data, var.name = "taxa", p_adj = "BH", Parallel)
+#' Welch_ANOVA(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH", Parallel)
+#' Welch_ANOVA(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH", Parallel)
 #' @export
 Welch_ANOVA <- function(dAtA, var.name, p_adj, Parallel){
   if(missing(dAtA)) print("No data input!") else {
@@ -107,9 +108,12 @@ Welch_ANOVA <- function(dAtA, var.name, p_adj, Parallel){
 #' @md
 #'  
 #' @examples
-#' pairwise_welch(dAtA = CSR_data)
-#' pairwise_welch(dAtA = CSR_data, var.name = "taxa", p_adj = "BH")
-#' pairwise_welch(dAtA = CSR_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+#' pairwise_welch(dAtA = CSR_IP2G_data)
+#' pairwise_welch(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH")
+#' pairwise_welch(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+#' pairwise_welch(dAtA = CSR_TAXA_data)
+#' pairwise_welch(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH")
+#' pairwise_welch(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
 #' @export
 pairwise_welch <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Parallel){
   if(missing(dAtA)) print("No data input!") else {
@@ -305,9 +309,12 @@ pairwise_welch <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Paral
 #'@md
 #'  
 #' @examples
-#' CSR_assign(dAtA = CSR_data)
-#' CSR_assign(dAtA = CSR_data, var.name = "taxa", p_adj = "BH")
-#' CSR_assign(dAtA = CSR_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+#' CSR_assign(dAtA = CSR_IP2G_data)
+#' CSR_assign(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH")
+#' CSR_assign(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+#' CSR_assign(dAtA = CSR_TAXA_data)
+#' CSR_assign(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH")
+#' CSR_assign(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
 #' @export
 CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis) {
   if(missing(dAtA)) print("No data input!") else {
@@ -544,9 +551,13 @@ CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis) {
 #'@md
 #'  
 #' @examples
-#' CSR_Simulation(DaTa = CSR_data)
-#' CSR_Simulation(DaTa = CSR_data, NSim = 10000, p_adj = "BH")
-#' CSR_Simulation(DaTa = CSR_data, NSim = 10000, p_adj = "BH", var.name = "TAXA", NuLl.test = FALSE, Keep_data = FALSE)
+#' CSR_Simulation(DaTa = CSR_IP2G_data)
+#' CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 10000, p_adj = "BH")
+#' CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 10000, p_adj = "BH", var.name = "TAXA", NuLl.test = FALSE, Keep_data = FALSE)
+#' CSR_Simulation(DaTa = CSR_TAXA_data)
+#' CSR_Simulation(DaTa = CSR_TAXA_data, NSim = 10000, p_adj = "BH")
+#' CSR_Simulation(DaTa = CSR_TAXA_data, NSim = 10000, p_adj = "BH", var.name = "TAXA", NuLl.test = FALSE, Keep_data = FALSE)
+
 #' @export
 CSR_Simulation <- function(DaTa, NSim, p_adj, p.value.cutoff, Parallel, var.name, NuLl.test, Keep_data){
 
