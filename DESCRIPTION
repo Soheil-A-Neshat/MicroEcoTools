@@ -13,11 +13,11 @@ RoxygenNote: 7.3.1
 Depends: 
     R (>= 3.5),
     data.table,
+    plyr,
     dplyr,
     effectsize,
     ggplot2,
     magrittr,
-    plyr,
     progress,
     reshape2,
     vegan,

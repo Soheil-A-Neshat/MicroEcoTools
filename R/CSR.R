@@ -348,8 +348,8 @@ CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis) {
       dAtA_subset <- filtered_dAtA[which(filtered_dAtA[,1] == i),]
 
       if (n.Exp.Grp > 2) {
-        if(all(dAtA_subset[1:(n.Exp.Grp-1),11] != "ns") & (all(dAtA_subset[1:(n.Exp.Grp-1),12] == "medium") | all(dAtA_subset[1:(n.Exp.Grp-1),12] == "large")) & all(dAtA_subset[1:(n.Exp.Grp-1),4] > 0)) {
-          a[i,2] <- "C"} else if (all(dAtA_subset[(n.Exp.Grp-1):(2*n.Exp.Grp-3),11] != "ns") & (all(dAtA_subset[(n.Exp.Grp-1):(2*n.Exp.Grp-3),12] == "medium") | all(dAtA_subset[(n.Exp.Grp-1):(2*n.Exp.Grp-3),12] == "large")) & all(dAtA_subset[(n.Exp.Grp-1):(2*n.Exp.Grp-3),4] < 0)) {
+        if(all(dAtA_subset[dAtA_subset[2]==Exp.Grp[1],11] != "ns") & (all(dAtA_subset[dAtA_subset[2]==Exp.Grp[1],12] == "medium") | all(dAtA_subset[dAtA_subset[2]==Exp.Grp[1],12] == "large")) & all(dAtA_subset[dAtA_subset[2]==Exp.Grp[1],4] > 0)) {
+          a[i,2] <- "C"} else if (all(dAtA_subset[dAtA_subset[3]==Exp.Grp[length(Exp.Grp)],11] != "ns") & (all(dAtA_subset[dAtA_subset[3]==Exp.Grp[length(Exp.Grp)],12] == "medium") | all(dAtA_subset[dAtA_subset[3]==Exp.Grp[length(Exp.Grp)],12] == "large")) & all(dAtA_subset[dAtA_subset[3]==Exp.Grp[length(Exp.Grp)],4] < 0)) {
             a[i,2] <- "S" } else if(all(dAtA_subset[1:(n.Exp.Grp-1),11] == "ns") & all(dAtA_subset[1:(n.Exp.Grp-1),12] != "ne"))a[i,2] <- "CSR" else if(all(dAtA_subset[1:(n.Exp.Grp-1),11] == "ns") & any(dAtA_subset[1:(n.Exp.Grp-1),12] == "ne")){a[i,2] <- "NA"
             a[i,3] <- "Cannot assign CSR probably due to lack of variability in the data. Please inspect the data."} else {
               dAtA_subset_CR <- dAtA_subset[which((dAtA_subset[,2] == Exp.Grp[1] & dAtA_subset[,3] != Exp.Grp[n.Exp.Grp])),]
