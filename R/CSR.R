@@ -356,8 +356,8 @@ CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis) {
               dAtA_subset_CR[,4] <- dAtA_subset_CR[,4] * -1
               dAtA_subset_SR <- dAtA_subset[which(dAtA_subset[,2] != Exp.Grp[1] & dAtA_subset[,3] == Exp.Grp[n.Exp.Grp]),]
               dAtA_subset_R <- rbind(dAtA_subset_CR, dAtA_subset_SR)
-              #dAtA_subset_R <- dAtA_subset_R[which(dAtA_subset_R[,11] == "*" & (dAtA_subset_R[,12] == "medium" | dAtA_subset_R[,12] == "large")),]
-              if(dAtA_subset_R[,11] == "*" & (dAtA_subset_R[,12] == "medium" | dAtA_subset_R[,12] == "large") & (any(dAtA_subset_R[,4] > 0) & !any(dAtA_subset_R[,4] < 0))) {
+              dAtA_subset_R <- dAtA_subset_R[which(dAtA_subset_R[,11] == "*" & (dAtA_subset_R[,12] == "medium" | dAtA_subset_R[,12] == "large")),]
+              if(all(dAtA_subset_R[,4] > 0) & length(unique(dAtA_subset_R[,1]))>1) {
                 a[i,2] <- "R"}
             }
       }else {
