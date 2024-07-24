@@ -46,7 +46,7 @@
 #'
 #' @export NMA
 #'
-NMA <- function(DaTa, NSim, InDeX, ObSsIm, p.adj, Plot_Level, Keep_Data){
+NMA <- function(DaTa, NSim, InDeX, ObSsIm, p.adj, Plot_Level, Keep_Data, Deb){
   if(missing(DaTa)){
     DaTa <- NMA::NMA_data
     print("NMA analysis using a demo dataset from Santillan et al. 2019.")
@@ -89,6 +89,9 @@ NMA <- function(DaTa, NSim, InDeX, ObSsIm, p.adj, Plot_Level, Keep_Data){
   }
   if(missing(Keep_Data)){
     Keep_Data <- FALSE
+  }
+  if(missing(Deb)){
+    Deb <- FALSE
   }
 
   `%>%` <- magrittr::`%>%`
@@ -289,25 +292,69 @@ NMA <- function(DaTa, NSim, InDeX, ObSsIm, p.adj, Plot_Level, Keep_Data){
                                                                                                                                             panel.grid.major = ggplot2::element_blank(),
                                                                                                                                             panel.grid.minor = ggplot2::element_blank(),
                                                                                                                                             plot.background = ggplot2::element_blank())
-
+  
+  DaTa_casted <- dcast(DaTa, as.formula(paste0(colnames(DaTa[1]),"+",colnames(DaTa[2]),"+",colnames(DaTa[3]),"~",colnames(DaTa[4]))), value.var = colnames(DaTa[5]))
+  NMA_diversity_d <- as.data.frame(cbind(DaTa_casted[1:3], apply(DaTa_casted[4:length(DaTa_casted[1,])],1, function(x) vegan::specnumber(x)), apply(DaTa_casted[4:length(DaTa_casted[1,])],1, function(x) exp(vegan::diversity(x, index = "shannon"))), apply(DaTa_casted[4:length(DaTa_casted[1,])],1, function(x) vegan::diversity(x, index = "invsimpson"))))
+  colnames(NMA_diversity_d) <- c(colnames(DaTa_casted[1:3]), "H0", "H1", "H2")
+  
+  H0 <- melt(NMA_diversity_d[1:4],id.vars = colnames(NMA_diversity_d[1:3]))
+  H1 <- melt(NMA_diversity_d[c(-4,-6)],id.vars = colnames(NMA_diversity_d[1:3]))
+  H2 <- melt(NMA_diversity_d[c(-4,-5)],id.vars = colnames(NMA_diversity_d[1:3]))
+  
+  NMA_diversity_H0 <- ggplot2::ggplot(H0, ggplot2::aes(x= factor(Exp.Grp, levels = Plot_Level), y=value)) + ggplot2::geom_boxplot(ggplot2::aes(color= Time_point), ) + ggplot2::geom_jitter(width = 0.15, alpha = 0.4)+
+    ggplot2::ggtitle(paste0("Alpha diversity")) +  ggplot2::xlab("Experimental group") + ggplot2::ylab("Zero-order Hill number") + ggplot2::theme(axis.title.x = ggplot2::element_text(size=18),
+                                                                                                                                                  axis.title.y = ggplot2::element_text(size=18),
+                                                                                                                                                  panel.background = ggplot2::element_blank(),
+                                                                                                                                                  panel.grid.major = ggplot2::element_blank(),
+                                                                                                                                                  panel.grid.minor = ggplot2::element_blank(),
+                                                                                                                                                  plot.background = ggplot2::element_blank()) + ggplot2::guides(color = ggplot2::guide_legend(title="Time point"))
+  
+  
+  
+  NMA_diversity_H1 <- ggplot2::ggplot(H1, ggplot2::aes(x= factor(Exp.Grp, levels = Plot_Level), y=value)) + ggplot2::geom_boxplot(ggplot2::aes(color= Time_point), ) + ggplot2::guides(color = ggplot2::guide_legend(title="Time point")) + ggplot2::geom_jitter(width = 0.15, alpha = 0.4) +
+    ggplot2::ggtitle(paste0("Alpha diversity")) +  ggplot2::xlab("Experimental group") + ggplot2::ylab("First-order Hill number") + ggplot2::theme(axis.title.x = ggplot2::element_text(size=18),
+                                                                                                                                                   axis.title.y = ggplot2::element_text(size=18),
+                                                                                                                                                   panel.background = ggplot2::element_blank(),
+                                                                                                                                                   panel.grid.major = ggplot2::element_blank(),
+                                                                                                                                                   panel.grid.minor = ggplot2::element_blank(),
+                                                                                                                                                   plot.background = ggplot2::element_blank())
+  
+  
+  NMA_diversity_H2 <- ggplot2::ggplot(H2, ggplot2::aes(x= factor(Exp.Grp, levels = Plot_Level), y=value)) + ggplot2::geom_boxplot(ggplot2::aes(color= Time_point), ) + ggplot2::guides(color = ggplot2::guide_legend(title="Time point")) + ggplot2::geom_jitter(width = 0.15, alpha = 0.4)+
+    ggplot2::ggtitle(paste0("Alpha diversity")) +  ggplot2::xlab("Experimental group") + ggplot2::ylab("Second-order Hill number") + ggplot2::theme(axis.title.x = ggplot2::element_text(size=18),
+                                                                                                                                                    axis.title.y = ggplot2::element_text(size=18),
+                                                                                                                                                    panel.background = ggplot2::element_blank(),
+                                                                                                                                                    panel.grid.major = ggplot2::element_blank(),
+                                                                                                                                                    panel.grid.minor = ggplot2::element_blank(),
+                                                                                                                                                    plot.background = ggplot2::element_blank())
+  
   if (length(unique(SES_data$variable)) > 1){
     SES_plot <- SES_plot + ggplot2::facet_wrap(~SES_data$variable) + ggplot2::theme(axis.text.x = ggplot2::element_text(angle=90,hjust=0.95,vjust=0.2))
     SI_plot <- SI_plot + ggplot2::facet_wrap(~SI_data$variable) + ggplot2::theme(axis.text.x = ggplot2::element_text(angle=90,hjust=0.95,vjust=0.2))
     Kraft_SES_plot <- Kraft_SES_plot + ggplot2::facet_wrap(~kraft_SES_data$variable) + ggplot2::theme(axis.text.x = ggplot2::element_text(angle=90,hjust=0.95,vjust=0.2))
     Kraft_SI_plot <- Kraft_SI_plot + ggplot2::facet_wrap(~kraft_SES_data$variable) + ggplot2::theme(axis.text.x = ggplot2::element_text(angle=90,hjust=0.95,vjust=0.2))
     Cohens_d_plot <- Cohens_d_plot + ggplot2::facet_wrap(~Time_point) + ggplot2::theme(axis.text.x = ggplot2::element_text(angle=90,hjust=0.95,vjust=0.2))
+    NMA_diversity_H0 <- NMA_diversity_H0 + ggplot2::facet_wrap(~Time_point) + ggplot2::theme(axis.text.x = ggplot2::element_text(angle=90,hjust=0.95,vjust=0.2))
+    NMA_diversity_H1 <- NMA_diversity_H1 + ggplot2::facet_wrap(~Time_point) + ggplot2::theme(axis.text.x = ggplot2::element_text(angle=90,hjust=0.95,vjust=0.2))
+    NMA_diversity_H2 <- NMA_diversity_H2 + ggplot2::facet_wrap(~Time_point) + ggplot2::theme(axis.text.x = ggplot2::element_text(angle=90,hjust=0.95,vjust=0.2))
   }
   NMA_parameters <- list(NSim, InDeX, ObSsIm, p.adj, Plot_Level, unique(DaTa$Time_point))
 
-  NMA_Results <<- list(P_SN_NMA_Observed_data, P_SN_NMA_Sim_data, P_SN_NMA_Sim_diversity, P_SN_NMA_Obs_diversity, NMA_stat, SES_data, SI_data, kraft, SES_plot, SI_plot, Kraft_SES_plot, Kraft_SI_plot, Cohens_d_plot, NMA_parameters)
-  names(NMA_Results) <<-c("Simulated_observed_data", "Simulated_data", "Simulated_diversity", "Observed_diversity", "Statistical_significance", "Standard_effect_size_data", "Stochastic_intensity_data", "Kraft_model_data", "SES_plot", "SI_plot", "Kraft_SES_plot", "Kraft_SI_plot", "Cohens_d_plot", "NMA_parameters")
-
+  NMA_Results <<- list(P_SN_NMA_Observed_data, P_SN_NMA_Sim_data, P_SN_NMA_Sim_diversity, P_SN_NMA_Obs_diversity, NMA_stat, SES_data, SI_data, kraft, SES_plot, SI_plot, Kraft_SES_plot, Kraft_SI_plot, Cohens_d_plot, NMA_parameters, NMA_diversity_d, NMA_diversity_H0, NMA_diversity_H1, NMA_diversity_H2)
+  names(NMA_Results) <<-c("Simulated_observed_data", "Simulated_data", "Simulated_diversity", "Observed_diversity", "Statistical_significance", "Standard_effect_size_data", "Stochastic_intensity_data", "Kraft_model_data", "SES_plot", "SI_plot", "Kraft_SES_plot", "Kraft_SI_plot", "Cohens_d_plot", "NMA_parameters","Hill_table", "Hill_zero", "Hill_first", "Hill_second")
+  #NMA_Results <<- list(P_SN_NMA_Observed_data, P_SN_NMA_Sim_data, P_SN_NMA_Sim_diversity, P_SN_NMA_Obs_diversity, NMA_stat, SES_data, SI_data, kraft, SES_plot, SI_plot, Kraft_SES_plot, Kraft_SI_plot, Cohens_d_plot, NMA_parameters)
+  #names(NMA_Results) <<-c("Simulated_observed_data", "Simulated_data", "Simulated_diversity", "Observed_diversity", "Statistical_significance", "Standard_effect_size_data", "Stochastic_intensity_data", "Kraft_model_data", "SES_plot", "SI_plot", "Kraft_SES_plot", "Kraft_SI_plot", "Cohens_d_plot", "NMA_parameters")
+  
   if(exists("NMA_Results")){
     print("The results are stored in NMA_Results list. You can see the plots using NMA_Results$SES_plot, NMA_Results$Kraft_SES_plot, and NMA_Results$Cohens_d_plot.")
+    print("In addition, a table containing Hill diversity and three plots for Zero, first and second order Hill numbers can be accessed using NMA_Results$NMA_diversity_d, NMA_Results$NMA_diversity_H0, NMA_Results$NMA_diversity_H1 and NMA_Results$NMA_diversity_H2 commands.")
   }
     },error = function(e){
-      on.exit(options(show.error.messages = FALSE))
-      return(cat("\nFinished with error! \n"))
+      on.exit(options(show.error.messages = Deb))
+      if (Deb == TRUE){
+      message(conditionMessage(e))}else{
+      return(cat("\nFinished with error! \n"))}
+      
 }
 )
   }
