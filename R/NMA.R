@@ -360,3 +360,35 @@ NMA <- function(DaTa, NSim, InDeX, ObSsIm, p.adj, Plot_Level, Keep_Data, Deb){
   }
 
 
+#' @title  Hill diversity analysis (MicroEcoTools)
+#'
+#' @description This function returns zero-, first- and second-order Hill diversity 
+#'
+#' @param dAtA Dataframe is the count table.
+#' @return This function returns a table containing the Hill diversity values.
+#' @details
+#'The input data sample:
+#'
+#' | TAXA1 | TAXA2 | TAXA3 |
+#'|-----------:|-----------:|-----------:|
+#'  | 10 | 91 | 68 |
+#'  | 11 | 86 | 70 |
+#'  | 12 | 84 | 70 |
+#'  | 15 | 30 | 3452 |
+#'  | 19 | 45 | 3274 |
+#'  | 13 | 25 | 3601 |
+#'@md
+#'  
+#' @examples
+#' Hill_diversity(dAtA = CSR_TAXA_data[3:1509])
+#' @export
+Hill_diversity <- function(dAtA){
+  if(missing(dAtA)) print("No data input!")
+    
+  H_diversity <- as.data.frame(cbind(apply(dAtA,1, function(x) vegan::specnumber(x)), apply(dAtA,1, function(x) exp(vegan::diversity(x, index = "shannon"))), apply(dAtA,1, function(x) vegan::diversity(x, index = "invsimpson"))))
+  
+    colnames(H_diversity) <- c("H0", "H1", "H2")
+
+    return(H_diversity)
+  }
+

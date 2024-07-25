@@ -2,6 +2,7 @@
 
 export(CSR_Simulation)
 export(CSR_assign)
+export(Hill_diversity)
 export(NMA)
 export(Welch_ANOVA)
 export(pairwise_welch)

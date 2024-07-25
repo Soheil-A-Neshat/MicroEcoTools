@@ -4,7 +4,7 @@
 \alias{NMA}
 \title{Theoretical Microbial Ecology Tools (MicroEcoTools)}
 \usage{
-NMA(DaTa, NSim, InDeX, ObSsIm, p.adj, Plot_Level, Keep_Data)
+NMA(DaTa, NSim, InDeX, ObSsIm, p.adj, Plot_Level, Keep_Data, Deb)
 }
 \arguments{
 \item{DaTa}{A data frame containing the environmental and community data in long format with column names of Exp.Grp, Reactor, Time_point, TAXA, and Count Please note that you need at least two replicates for each experimental group.}
