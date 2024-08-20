@@ -55,5 +55,7 @@ More details are available here: https://www.biorxiv.org/content/10.1101/2024.08
 Requires at least two biological replicates for analysis.
 Simulation results may vary with fewer than 1,000 simulations.
 
-## Conclusion
-MicroEcoTools is a powerful tool for microbial ecologists, offering computationally efficient methods to analyze the impacts of disturbances on microbial communities. It simplifies complex data analysis, enabling researchers to apply ecological theories with minimal coding.
+## Citation
+MicroEcoTools: an R package for comprehensive theoretical microbial ecology analysis
+Soheil Neshat, Ezequiel Santillan, Stefan Wuertz
+bioRxiv 2024.08.19.608598; doi: https://doi.org/10.1101/2024.08.19.608598
