@@ -1,5 +1,5 @@
-## MicroEcoTools
-# Theoretical Microbial Ecology Computational Tools
+# MicroEcoTools
+Theoretical Microbial Ecology Computational Tools
 
 MicroEcoTools is an R package developed for microbial ecologists to apply ecological frameworks to microbial community data. This package helps analyze the effects of disturbances on microbial communities by assessing microbial diversity, community assembly mechanisms, and life-history strategies.
 
