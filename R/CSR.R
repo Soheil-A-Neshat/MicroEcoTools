@@ -10,7 +10,7 @@
 #'@details
 #'The input data sample:
 #'
-#' | Exp.Grp | Reactor | TAXA1 | TAXA2 | TAXA3 |
+#' | Exp.Grp | Replicate | TAXA1 | TAXA2 | TAXA3 |
 #'|-----------|:-----------:|-----------:|:-----------:|-----------:|
 #'  | X0 | 1 | 10 | 91 | 68 |
 #'  | X0 | 2 | 11 | 86 | 70 |
@@ -97,7 +97,7 @@ Welch_ANOVA <- function(dAtA, var.name, p_adj, Parallel){
 #' @details
 #'The input data sample:
 #'
-#' | Exp.Grp | Reactor | TAXA1 | TAXA2 | TAXA3 |
+#' | Exp.Grp | Replicate | TAXA1 | TAXA2 | TAXA3 |
 #'|-----------|:-----------:|-----------:|:-----------:|-----------:|
 #'  | X0 | 1 | 10 | 91 | 68 |
 #'  | X0 | 2 | 11 | 86 | 70 |
@@ -298,7 +298,7 @@ pairwise_welch <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Paral
 #'@details
 #'The input data sample:
 #'
-#' | Exp.Grp | Reactor | TAXA1 | TAXA2 | TAXA3 |
+#' | Exp.Grp | Replicate | TAXA1 | TAXA2 | TAXA3 |
 #'|-----------|:-----------:|-----------:|:-----------:|-----------:|
 #'  | X0 | 1 | 10 | 91 | 68 |
 #'  | X0 | 2 | 11 | 86 | 70 |
@@ -540,7 +540,7 @@ CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis) {
 #'@details
 #'The input data sample:
 #'
-#' | Exp.Grp | Reactor | TAXA1 | TAXA2 | TAXA3 |
+#' | Exp.Grp | Replicate | TAXA1 | TAXA2 | TAXA3 |
 #'|-----------|:-----------:|-----------:|:-----------:|-----------:|
 #'  | X0 | 1 | 10 | 91 | 68 |
 #'  | X0 | 2 | 11 | 86 | 70 |

@@ -10,11 +10,22 @@
 #'@section section title:Null model analysis (NMA) 
 #'
 #'@description Using a null model approach, this package tests the relative contribution of the assembly mechanisms (stochastic and deterministic) in a given community. Based on the observed communities, assuming that the community structure was randomly shaped, using a multinomial distribution, this package simulates random communities. A diversity metric will then be used to calculate the standard effect size between the observed communities and randomly generated communities.
-#'@param DaTa A data frame containing the environmental and community data in long format with column names of Exp.Grp, Reactor, Time_point, TAXA, and Count Please note that you need at least two replicates for each experimental group.
+#'@param DaTa A data frame containing the environmental and community data in long format with column names of Exp.Grp, Replicate, Time_point, TAXA, and Count Please note that you need at least two replicates for each experimental group.
 #'@details
-#'The input data sample:
+#'The input data can be in wide or long formats. Please see the examples below:
 #'
-#' | Exp.Grp | Reactor | Time_point | TAXA | Count |
+#'Sample 1 (wide format)
+#'| Exp.Grp | Replicate | Time_point | TAXA1 | TAXA2 |
+#'|-----------|:-----------:|-----------:|:-----------:|-----------:|
+#'  | X0 | 1 | 1 | 91 | 68 |
+#'  | X0 | 2 | 1 | 86 | 70 |
+#'  | X0 | 3 | 1 | 84 | 70 |
+#'  | X1 | 1 | 1 | 30 | 3452 |
+#'  | X1 | 2 | 1 | 45 | 3274 |
+#'  | X1 | 3 | 1 | 25 | 3601 |
+#'  
+#'Sample 2 (long format)
+#' | Exp.Grp | Replicate | Time_point | TAXA | Count |
 #'|-----------|:-----------:|-----------:|:-----------:|-----------:|
 #'  | I | 1 | 1 | rk1 | 68 |
 #'  | I | 2 | 1 | rk1 | 70 |
@@ -38,7 +49,7 @@
 #'NMA(DaTa = NMA_data, NSim = 100, InDeX = "invsimpson", ObSsIm = FALSE, p.adj = "BH", Plot_Level = c("L0", "L1", "L2", "L3", "L4", "L5", "L6", "L7"), Keep_Data = FALSE)
 #'
 #'@note All environmental variables should be converted to factor
-#'@note Environmental variables accepted are Time_point, Exp.Grp, and Reactor
+#'@note Environmental variables accepted are Time_point, Exp.Grp, and Replicate
 #'
 #'
 #'@references Santillan, Ezequiel, et al. "Frequency of disturbance alters diversity, function, and underlying assembly mechanisms of complex bacterial communities." npj Biofilms and Microbiomes 5.1 (2019): 1-9.
@@ -57,10 +68,10 @@ NMA <- function(DaTa, NSim, InDeX, ObSsIm, p.adj, Plot_Level, Keep_Data, Deb){
     return(cat("Invalid data format. Please refer to the manual using ?NMA"))
   }
 
-  if(dim(DaTa)[2] != 5){
-    ?NMA
-    return(cat("Invalid data format. Please refer to the manual using ?NMA"))
-  }
+#  if(dim(DaTa)[2] != 5){
+#    ?NMA
+#    return(cat("Invalid data format. Please refer to the manual using ?NMA"))
+#  }
 
   if(missing(NSim)){
     NSim <- 1000
@@ -110,12 +121,14 @@ NMA <- function(DaTa, NSim, InDeX, ObSsIm, p.adj, Plot_Level, Keep_Data, Deb){
   NSimO <- 0
   NMA_stat_p <- vector(length =0)
 
-  if ("Time_point" %in% colnames(NMA_data)){cat()}else{DaTa$Time_point <- 1}
-
+  if ("Time_point" %in% colnames(DaTa)){cat()}else{DaTa$Time_point <- 1}
+  if ("Count" %in% colnames(DaTa)){cat("Input data is in long format. Proceeding with the analysis...")}else{
+    cat("Input data is in wide format. Converting the data into long format and proceeding with the analysis")
+    DaTa <- reshape2::melt(DaTa, id.vars = c("Exp.Grp", "Replicate", "Time_point"), variable.name = "TAXA", value.name = "Count")}
 
   DaTa$Exp.Grp <- as.factor(DaTa$Exp.Grp)
   DaTa$Time_point <- as.factor(DaTa$Time_point)
-  DaTa$Reactor <- as.factor(DaTa$Reactor)
+  DaTa$Replicate <- as.factor(DaTa$Replicate)
   DaTa$TAXA <- as.character(DaTa$TAXA)
 
   pb <- progress::progress_bar$new(format = "(:spin) [:bar] :percent [Elapsed time: :elapsedfull || Estimated time remaining: :eta]",
@@ -136,11 +149,11 @@ NMA <- function(DaTa, NSim, InDeX, ObSsIm, p.adj, Plot_Level, Keep_Data, Deb){
     for (j in unique(P_SN_NMA_tmp1$Time_point)){
       P_SN_NMA_tmp2 <- P_SN_NMA_tmp1 %>% dplyr::filter(Time_point == paste(j))
 
-      NRep <- length(unique(P_SN_NMA_tmp2$Reactor))
+      NRep <- length(unique(P_SN_NMA_tmp2$Replicate))
       if (NRep < 2){
         print(paste("There is only one replicate for ", P_SN_NMA_tmp1[1,1], " experimental group at time point ", P_SN_NMA_tmp1[1,3], ". Please consider removing this experimental group - time point and try again."))
       }
-      P_SN_NMA_tmp2 <- reshape2::dcast(data.table::as.data.table(P_SN_NMA_tmp2), Time_point+Exp.Grp+TAXA~Reactor, value.var = "Count", fun.aggregate = sum)
+      P_SN_NMA_tmp2 <- reshape2::dcast(data.table::as.data.table(P_SN_NMA_tmp2), Time_point+Exp.Grp+TAXA~Replicate, value.var = "Count", fun.aggregate = sum)
       expected <- P_SN_NMA_tmp2 %>% dplyr::select_if(is.numeric)
       expected <- expected[rowSums(expected) != 0,]
 

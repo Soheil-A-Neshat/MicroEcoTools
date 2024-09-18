@@ -7,7 +7,7 @@
 NMA(DaTa, NSim, InDeX, ObSsIm, p.adj, Plot_Level, Keep_Data, Deb)
 }
 \arguments{
-\item{DaTa}{A data frame containing the environmental and community data in long format with column names of Exp.Grp, Reactor, Time_point, TAXA, and Count Please note that you need at least two replicates for each experimental group.}
+\item{DaTa}{A data frame containing the environmental and community data in long format with column names of Exp.Grp, Replicate, Time_point, TAXA, and Count Please note that you need at least two replicates for each experimental group.}
 
 \item{NSim}{A number to specify the number of simulations (values bellow 1000 are not recomended). Default to 1000 simulations.}
 
@@ -30,8 +30,21 @@ The tools implemented in the MicroEcoTools help researchers and practitioners to
 Using a null model approach, this package tests the relative contribution of the assembly mechanisms (stochastic and deterministic) in a given community. Based on the observed communities, assuming that the community structure was randomly shaped, using a multinomial distribution, this package simulates random communities. A diversity metric will then be used to calculate the standard effect size between the observed communities and randomly generated communities.
 }
 \details{
-The input data sample:\tabular{lcrcr}{
-   Exp.Grp \tab Reactor \tab Time_point \tab TAXA \tab Count \cr
+The input data can be in wide or long formats. Please see the examples below:
+
+Sample 1 (wide format)\tabular{lcrcr}{
+   Exp.Grp \tab Replicate \tab Time_point \tab TAXA1 \tab TAXA2 \cr
+   X0 \tab 1 \tab 1 \tab 91 \tab 68 \cr
+   X0 \tab 2 \tab 1 \tab 86 \tab 70 \cr
+   X0 \tab 3 \tab 1 \tab 84 \tab 70 \cr
+   X1 \tab 1 \tab 1 \tab 30 \tab 3452 \cr
+   X1 \tab 2 \tab 1 \tab 45 \tab 3274 \cr
+   X1 \tab 3 \tab 1 \tab 25 \tab 3601 \cr
+}
+
+
+Sample 2 (long format)\tabular{lcrcr}{
+   Exp.Grp \tab Replicate \tab Time_point \tab TAXA \tab Count \cr
    I \tab 1 \tab 1 \tab rk1 \tab 68 \cr
    I \tab 2 \tab 1 \tab rk1 \tab 70 \cr
    X0 \tab 1 \tab 1 \tab rk1 \tab 3452 \cr
@@ -42,7 +55,7 @@ The input data sample:\tabular{lcrcr}{
 \note{
 All environmental variables should be converted to factor
 
-Environmental variables accepted are Time_point, Exp.Grp, and Reactor
+Environmental variables accepted are Time_point, Exp.Grp, and Replicate
 }
 \section{section title}{
 Null model analysis (NMA)

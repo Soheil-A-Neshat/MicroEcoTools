@@ -28,7 +28,7 @@ In cases where the assumptions are not valid it chooses equal variance by automa
 }
 \details{
 The input data sample:\tabular{lcrcr}{
-   Exp.Grp \tab Reactor \tab TAXA1 \tab TAXA2 \tab TAXA3 \cr
+   Exp.Grp \tab Replicate \tab TAXA1 \tab TAXA2 \tab TAXA3 \cr
    X0 \tab 1 \tab 10 \tab 91 \tab 68 \cr
    X0 \tab 2 \tab 11 \tab 86 \tab 70 \cr
    X0 \tab 3 \tab 12 \tab 84 \tab 70 \cr
