@@ -24,6 +24,6 @@ Depends:
     progress,
     parallel,
     doParallel,
-    foreach
+    foreach,
     tidyverse
 
