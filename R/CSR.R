@@ -381,7 +381,7 @@ CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis) {
       if(length(dAtA_subset_CS[,4]) > 0 & length(dAtA_subset_SR[,4]) > 0) {
       if(all(dAtA_subset_CS[,4] > 0) & any(dAtA_subset_SR[,4] > 0) & !any(dAtA_subset_SR[,4] < 0)) {
           a[ii,2] <- "CR"} }
-      if(length(dAtA_subset_CR[,4]) > 0 & length(dAtA_subset_SR[,4]) > 0 & length(dAtA_subset_CS[,11] == 0)) {
+      if(length(dAtA_subset_CR[,4]) > 0 & length(dAtA_subset_SR[,4]) > 0 & length(dAtA_subset_CS[,11]) == 0) {
       if(all(dAtA_subset_CR[,4] > 0) & all(dAtA_subset_SR[,4] < 0)) {
             a[ii,2] <- "CS"} }
       if (a[ii,2] == "") {
@@ -404,7 +404,7 @@ CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis) {
     vis_data_CS_r <- data.frame()
     vis_data_CR_r <- data.frame()
     vis_data_SR_r <- data.frame()
-    if(Vis == TRUE){
+    tryCatch({ if(Vis == TRUE){
       vis_data_C <- a[which(a[,5] == "C" ),]
       if(length (vis_data_C[,1]) > 0){
       j = 1
@@ -506,7 +506,9 @@ CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis) {
       
       CSR_plot_sorted_abundance <<- CSR_Plot(DaTa = DaTa, CSR_cat = a, CSR_vis_list = vis_data_list_r, var.name = var.name,  sort.var = "abundance")
       CSR_plot_sorted_p_value <<- CSR_Plot(DaTa = DaTa, CSR_cat = a, CSR_vis_list = vis_data_list_p, var.name = var.name, sort.var = "adjusted P-value")
-    }
+    }}, error = function(e) {
+  message("Warning: visualisation cannot be performed due to insufficient number of traits categorised as C, S or R ")
+  })
 
     return(a)
   }}
