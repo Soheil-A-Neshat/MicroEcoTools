@@ -25,4 +25,5 @@ Depends:
     parallel,
     doParallel,
     foreach
+    tidyverse
 
