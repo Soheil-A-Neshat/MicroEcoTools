@@ -33,6 +33,8 @@ The input data sample:\tabular{lcrcr}{
 }
 }
 \examples{
-Welch_ANOVA(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH", Parallel)
-Welch_ANOVA(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH", Parallel)
+\dontrun{
+Welch_ANOVA(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH", Parallel = TRUE)
+Welch_ANOVA(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH", Parallel = TRUE)
+}
 }

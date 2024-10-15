@@ -21,44 +21,72 @@
 #'@md
 #'  
 #' @examples
-#' Welch_ANOVA(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH", Parallel)
-#' Welch_ANOVA(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH", Parallel)
+#' \dontrun{
+#' Welch_ANOVA(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH", Parallel = TRUE)
+#' Welch_ANOVA(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH", Parallel = TRUE)
+#' }
+#' @importFrom parallel detectCores makeCluster stopCluster
+#' @importFrom doParallel registerDoParallel
+#' @importFrom foreach %dopar% foreach registerDoSEQ
+#' @importFrom progress progress_bar
+#' @importFrom stats oneway.test p.adjust
 #' @export
 Welch_ANOVA <- function(dAtA, var.name, p_adj, Parallel){
   if(missing(dAtA)) print("No data input!") else {
-    a <- data.frame()
+    
     if(missing(var.name)) var.name <- "Variable"
     if(missing(p_adj)) p_adj <- "BH"
     if(missing(Parallel)) Parallel <- TRUE
     total_iterations <- length(dAtA[1,]) - 2
     
-    if(Parallel == TRUE){
-      ncores <- parallel::detectCores() - 2
-      if (ncores < 1) ncores <- 1 
+    run_parallel_welch_anova <- function(dAtA, total_iterations) {
+      a <- data.frame()
+      get_cores <- function() {
+        if (as.logical(Sys.getenv("_R_CHECK_LIMIT_CORES_", "FALSE"))) {
+          return(2)
+        } else {
+          ncores <- max(1, floor(parallel::detectCores() - 4))
+          return(ncores)
+        }
+      }
+      ncores <- get_cores()
       cl <- parallel::makeCluster(ncores)
-      doParallel::registerDoParallel(cl)
       
+      doParallel::registerDoParallel(cl)
+      on.exit({parallel::stopCluster(cl)
+        foreach::registerDoSEQ()
+        print("Closing the parallel tasks ...")}, add = TRUE)
       message(paste0("  Parallel Welch-ANOVA comparisons with ", ncores, " CPU cores. Please be patient..."))
       
-      a_result <- foreach::foreach (i = 1:total_iterations, .combine = rbind) %dopar% {
-        f <- as.formula(noquote(paste0("`",names(dAtA)[i+2],"`","~",paste(names(dAtA)[1],collapse = " + "))))
-        a[i,1] <- names(dAtA)[i+2]
-        if (is.na(oneway.test(f, data = dAtA, var.equal = FALSE)$p.value)){
-          a[i,2] <- oneway.test(f, data = dAtA, var.equal = TRUE)$p.value
-          a[i,3] <- oneway.test(f, data = dAtA, var.equal = TRUE)$method
-          a[i,4] <- "*"}else {
-            a[i,2] <- oneway.test(f, data = dAtA, var.equal = FALSE)$p.value
-            a[i,3] <- oneway.test(f, data = dAtA, var.equal = FALSE)$method
-            a[i,4] <- "-"}
-        Sys.sleep(1 / total_iterations)
-        return(a[i, , drop = FALSE])
+      a_result <- foreach::foreach(i = 1:total_iterations, .combine = rbind) %dopar% {
+        result <- data.frame(matrix(nrow = 1, ncol = 4))  # Placeholder for each iteration result
+        f <- as.formula(noquote(paste0("`", names(dAtA)[i + 2], "` ~ ", paste(names(dAtA)[1], collapse = " + "))))
+        
+        result[1, 1] <- names(dAtA)[i + 2]  # Variable name (column name in data)
+        
+        # Perform Welch's ANOVA or fallback to equal variance if necessary
+        if (is.na(oneway.test(f, data = dAtA, var.equal = FALSE)$p.value)) {
+          result[1, 2] <- oneway.test(f, data = dAtA, var.equal = TRUE)$p.value
+          result[1, 3] <- oneway.test(f, data = dAtA, var.equal = TRUE)$method
+          result[1, 4] <- "*"
+        } else {
+          result[1, 2] <- oneway.test(f, data = dAtA, var.equal = FALSE)$p.value
+          result[1, 3] <- oneway.test(f, data = dAtA, var.equal = FALSE)$method
+          result[1, 4] <- "-"
+        }
+        Sys.sleep(1 / total_iterations)  # Simulated delay
+        return(result)  # Return result for this iteration
       }
       
-      parallel::stopCluster(cl)
-      foreach::registerDoSEQ()
-      a <- a_result
+      return(a_result)  # Return combined result
+    }
+      
+    if(Parallel == TRUE){
+
+      a <- run_parallel_welch_anova(dAtA = dAtA,total_iterations = total_iterations)
       
     }else{
+      a <- data.frame()
     pb <- progress::progress_bar$new(format = "  Welch ANOVA [:bar] :percent in :elapsed", clear = FALSE, total = total_iterations)
 
     for (i in 1:total_iterations){
@@ -108,12 +136,24 @@ Welch_ANOVA <- function(dAtA, var.name, p_adj, Parallel){
 #' @md
 #'  
 #' @examples
+#' \dontrun{
 #' pairwise_welch(dAtA = CSR_IP2G_data)
 #' pairwise_welch(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH")
-#' pairwise_welch(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+#' pairwise_welch(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH", 
+#'   v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
 #' pairwise_welch(dAtA = CSR_TAXA_data)
 #' pairwise_welch(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH")
-#' pairwise_welch(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+#' pairwise_welch(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH", 
+#'   v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+#' }
+#' 
+#' @importFrom parallel detectCores makeCluster stopCluster
+#' @importFrom doParallel registerDoParallel
+#' @importFrom foreach %dopar% foreach registerDoSEQ
+#' @importFrom progress progress_bar
+#' @importFrom effectsize hedges_g interpret_hedges_g
+#' @importFrom stats oneway.test as.formula sd p.adjust
+#' @importFrom utils combn
 #' @export
 pairwise_welch <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Parallel){
   if(missing(dAtA)) print("No data input!") else {
@@ -122,7 +162,6 @@ pairwise_welch <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Paral
     if(missing(v.equal)) v.equal <- FALSE
     if(missing(p.value.cutoff)) p.value.cutoff <- 0.05
     if(missing(Parallel)) Parallel <- TRUE
-    library(progress)
     print(Sys.time())
     if(rowSums(dAtA[1,c(-1,-2)] <= 1) | rowSums(dAtA[1,c(-1,-2)] <= 100)) {
       message("  Relative abundance data detected. Converting to count data by multiplying the relative abundances by 100,000 ...")
@@ -136,13 +175,24 @@ pairwise_welch <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Paral
     a <- cbind(a, unlist(rep(as.character(c[,1],length(names(dAtA)[2:length(dAtA[1,])])))))
     a <- cbind(a, unlist(rep(as.character(c[,2],length(names(dAtA)[2:length(dAtA[1,])])))))
 
-
+    get_cores <- function() {
+      if (as.logical(Sys.getenv("_R_CHECK_LIMIT_CORES_", "FALSE"))) {
+        return(2)
+      } else {
+        ncores <- max(1, floor(parallel::detectCores() - 4))
+        return(ncores)
+      }
+    }
     if(Parallel == TRUE){
     message(paste("  Pairwise comparison of variables with variable name", var.name, ", P-value cutoff of" , p.value.cutoff, "in parallel mode."))
-    ncores <- parallel::detectCores() - 2
-    if (ncores < 1) ncores <- 1 
+    ncores <- get_cores()
+    message(paste("Using", ncores, "cores."))
+
     cl <- parallel::makeCluster(ncores)
     doParallel::registerDoParallel(cl)
+
+    #on.exit({parallel::stopCluster(cl) foreach::registerDoSEQ()}, add = TRUE)
+    
 
     # Create a progress bar
 
@@ -309,26 +359,39 @@ pairwise_welch <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Paral
 #'@md
 #'  
 #' @examples
+#' \dontrun{
 #' CSR_assign(dAtA = CSR_IP2G_data)
 #' CSR_assign(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH")
-#' CSR_assign(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+#' CSR_assign(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH", 
+#'   v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
 #' CSR_assign(dAtA = CSR_TAXA_data)
 #' CSR_assign(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH")
-#' CSR_assign(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+#' CSR_assign(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH", 
+#'   v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+#' }
+#' 
+#' @importFrom ggplot2 ggplot aes geom_point theme_minimal theme labs facet_wrap element_blank element_rect
+#' @importFrom reshape2 melt
+#' @importFrom dplyr select full_join mutate_if filter arrange all_of
+#' @importFrom magrittr %>%
+#' @importFrom stats complete.cases as.formula
+#' @importFrom utils str
+#' 
 #' @export
-CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis) {
+CSR_assign <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Parallel, Vis) {
   if(missing(dAtA)) print("No data input!") else {
     if(missing(var.name)) var.name <- "Trait"
     if(missing(p_adj)) p_adj <- "BH"
     if(missing(p.value.cutoff)) p.value.cutoff <- 0.05
     if(missing(Parallel)) Parallel <- TRUE
     if(missing(Vis)) Vis <- TRUE
+    if(missing(v.equal)) v.equal <- FALSE
     j=1
     DaTa <- dAtA
     wa <- Welch_ANOVA(dAtA = dAtA, var.name = var.name, p_adj = "BH")
     if (colnames(dAtA[2]) != "P1"){
       message("  Creating the pairwise Welch-ANOVA table from the input data using pairwise_welch function ...")
-      pww <- pairwise_welch(dAtA = dAtA, var.name = var.name, p_adj = p_adj, p.value.cutoff = p.value.cutoff, Parallel = Parallel)
+      pww <- pairwise_welch(dAtA = dAtA, var.name = var.name, p_adj = p_adj, v.equal = v.equal, p.value.cutoff = p.value.cutoff, Parallel = Parallel)
       dAtA <- pww
     }
     
@@ -537,6 +600,7 @@ CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis) {
 #' @param p.value.cutoff A cut-off value for calling the P-value significant can be set using this parameter. The default value is 0.05.
 #' @param Parallel Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses half of the available CPU cores to perform the calculations.
 #' @param Keep_data You can store the entire calculation results including the simulated communities in a list named CSR_Sim by setting this parameter to TRUE. By default it deletes the simulated data to save space.
+#' @param NuLl.test Using this parameter you can compare the assigned categories in your observed communities with a community generated with null hypothesis. (Beta version!) description
 #' @return This function returns a table containing the pairwise statistical comparison results. The output table can be fed into the CSR_assign function to assign CSR categories.
 #'
 #'@details
@@ -553,25 +617,26 @@ CSR_assign <- function(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis) {
 #'@md
 #'  
 #' @examples
-#' CSR_Simulation(DaTa = CSR_IP2G_data)
-#' CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 10000, p_adj = "BH")
-#' CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 10000, p_adj = "BH", var.name = "TAXA", NuLl.test = FALSE, Keep_data = FALSE)
+#' \dontrun{
+#' CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 10)
+#' CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 10, p_adj = "BH")
+#' CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 1000, p_adj = "BH", 
+#'   var.name = "TAXA", NuLl.test = FALSE, Keep_data = FALSE)
 #' CSR_Simulation(DaTa = CSR_TAXA_data)
-#' CSR_Simulation(DaTa = CSR_TAXA_data, NSim = 10000, p_adj = "BH")
-#' CSR_Simulation(DaTa = CSR_TAXA_data, NSim = 10000, p_adj = "BH", var.name = "TAXA", NuLl.test = FALSE, Keep_data = FALSE)
-
+#' CSR_Simulation(DaTa = CSR_TAXA_data, NSim = 1000, p_adj = "BH")
+#' CSR_Simulation(DaTa = CSR_TAXA_data, NSim = 1000, p_adj = "BH", 
+#'   var.name = "TAXA", NuLl.test = FALSE, Keep_data = FALSE)
+#' }
+#' 
+#' @importFrom dplyr mutate_if full_join select filter arrange
+#' @importFrom magrittr %>%
+#' @importFrom stringr str_count
+#' @importFrom purrr reduce
+#' @importFrom stats rmultinom
+#' 
 #' @export
-CSR_Simulation <- function(DaTa, NSim, p_adj, p.value.cutoff, Parallel, var.name, NuLl.test, Keep_data){
+CSR_Simulation <- function(DaTa, NSim, p_adj, p.value.cutoff, Parallel, var.name, v.equal, NuLl.test, Keep_data){
 
-  if(!"dplyr" %in% (.packages())){
-    require("dplyr")
-  }
-  if(!"magrittr" %in% (.packages())){
-    require("magrittr")
-  }
-  if(!"tidyverse" %in% (.packages())){
-    require("tidyverse")
-  }
   if(missing(DaTa)) print("No data input!") else {
     message(paste("CSR assignment with:"))
     if(missing(NSim)) NSim <- 1000
@@ -631,7 +696,7 @@ CSR_Simulation <- function(DaTa, NSim, p_adj, p.value.cutoff, Parallel, var.name
       rownames(CSR_Sim[[1]][[i]]) <- rownames(expected)
       CSR_Sim[[2]][[i]] <- as.data.frame(t(CSR_Sim[[1]][[i]]))
       CSR_Sim[[2]][[i]] <- cbind(DaTa[1],DaTa[2],CSR_Sim[[2]][[i]])
-      CSR_Sim[[3]][[i]] <- CSR_assign(dAtA = CSR_Sim[[2]][[i]], var.name = var.name, p_adj = p_adj ,p.value.cutoff = p.value.cutoff,Parallel = Parallel, Vis = FALSE)[c(1,5)]
+      CSR_Sim[[3]][[i]] <- CSR_assign(dAtA = CSR_Sim[[2]][[i]], var.name = var.name, p_adj = p_adj, p.value.cutoff = p.value.cutoff, v.equal = v.equal, Parallel = Parallel, Vis = FALSE)[c(1,5)]
       if (i == length(CSR_Sim[["data"]])) message("\nCSR assignment        ", "\u2713")
     }
     message("CSR assignment            ","\u2714","\n")
@@ -660,3 +725,4 @@ CSR_Simulation <- function(DaTa, NSim, p_adj, p.value.cutoff, Parallel, var.name
     }
     return(CSR_Sim[["Final_Verdict"]])
   }}
+

@@ -4,7 +4,7 @@
 \alias{CSR_assign}
 \title{Competitor - Stress tolerant - Ruderal assignment (MicroEcoTools)}
 \usage{
-CSR_assign(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis)
+CSR_assign(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Parallel, Vis)
 }
 \arguments{
 \item{dAtA}{Dataframe that contains experimental group, replicates, and parameters.}
@@ -13,13 +13,13 @@ CSR_assign(dAtA, var.name, p_adj, p.value.cutoff, Parallel, Vis)
 
 \item{p_adj}{P-value adjustment method. All methods mentioned in ?p.adjust function can be used ("BH", "BY", "holm", "hommel" or "none").}
 
+\item{v.equal}{Assumption of equal variance can be forced using this parameter. By default it is set to FALSE where it cannot be set to FALSE it will switch to TRUE automatically; a note will be shown in the remarks column in those cases.}
+
 \item{p.value.cutoff}{A cut-off value for calling the P-value significant can be set using this parameter. The default value is 0.05.}
 
 \item{Parallel}{Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses half of the available CPU cores to perform the calculations.}
 
 \item{Vis}{Using this parameter you can make visualize the top 5 taxa/trait sorted based on P-value or abundance. The graphs will be saved as CSR_plot_sorted_p_value and CSR_plot_sorted_abundance.}
-
-\item{v.equal}{Assumption of equal variance can be forced using this parameter. By default it is set to FALSE where it cannot be set to FALSE it will switch to TRUE automatically; a note will be shown in the remarks column in those cases.}
 }
 \value{
 This function returns a table containing the pairwise statistical comparison results. The output table can be fed into the CSR_assign function to assign CSR categories.
@@ -44,10 +44,15 @@ The input data sample:\tabular{lcrcr}{
 }
 }
 \examples{
+\dontrun{
 CSR_assign(dAtA = CSR_IP2G_data)
 CSR_assign(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH")
-CSR_assign(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+CSR_assign(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH", 
+  v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
 CSR_assign(dAtA = CSR_TAXA_data)
 CSR_assign(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH")
-CSR_assign(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+CSR_assign(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH", 
+  v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+}
+
 }

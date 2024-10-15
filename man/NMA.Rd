@@ -17,9 +17,11 @@ NMA(DaTa, NSim, InDeX, ObSsIm, p.adj, Plot_Level, Keep_Data, Deb)
 
 \item{p.adj}{A p-value correction method ("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"). Default to "Benjamini & Hochberg".}
 
-\item{Plot_level}{A vector with sites/experimental group titles. Default to the unique values in experimental group column in your input data frame.}
+\item{Plot_Level}{A vector with sites/experimental group titles. Default to the unique values in experimental group column in your input data frame.}
 
-\item{Keep_data}{A TRUE/FALSE variable to specify if you want to keep/remove simulated data. Default to FALSE.}
+\item{Keep_Data}{A TRUE/FALSE variable to specify if you want to keep/remove simulated data. Default to FALSE.}
+
+\item{Deb}{A TRUE/FALSE variable to specify if you want to run the function in verbose mode. Default to FALSE.}
 }
 \value{
 A list named NMA_Results containing the data (observed and simulated communities), results of the statistical analysis on the diversity metric between observed and simulated communities, calculated standard effect sizes and stochastic intensities, standard effect size and stochastic intensity plots using the user specified diversity metric (InDeX parameter), standard effect size and stochastic intensity plots using richness (based on Kraft et al. and Santillan et al. papers), and standard effect size plot using Cohen's d method.
@@ -62,10 +64,11 @@ Null model analysis (NMA)
 }
 
 \examples{
-NMA(DaTa = NMA_data)
-
-NMA(DaTa = NMA_data, NSim = 100, InDeX = "invsimpson", ObSsIm = FALSE, p.adj = "BH", Plot_Level = c("L0", "L1", "L2", "L3", "L4", "L5", "L6", "L7"), Keep_Data = FALSE)
-
+\dontrun{
+NMA(DaTa = NMA_data, NSim = 100)
+NMA(DaTa = NMA_data, NSim = 100, InDeX = "invsimpson", ObSsIm = FALSE, p.adj = "BH", 
+Plot_Level = c("L0", "L1", "L2", "L3", "L4", "L5", "L6", "L7"), Keep_Data = FALSE)
+}
 }
 \references{
 Santillan, Ezequiel, et al. "Frequency of disturbance alters diversity, function, and underlying assembly mechanisms of complex bacterial communities." npj Biofilms and Microbiomes 5.1 (2019): 1-9.

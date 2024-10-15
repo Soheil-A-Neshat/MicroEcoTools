@@ -38,16 +38,18 @@
 #'@param InDeX A diversity index from vegan package ("shannon", "simpson" or "invsimpson"). Default to "invsimpson.
 #'@param ObSsIm A dataset with multinomial distribution using the observed dataset as probability matrix will be generated.
 #'@param p.adj A p-value correction method ("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"). Default to "Benjamini & Hochberg".
-#'@param Plot_level A vector with sites/experimental group titles. Default to the unique values in experimental group column in your input data frame.
-#'@param Keep_data A TRUE/FALSE variable to specify if you want to keep/remove simulated data. Default to FALSE.
+#'@param Plot_Level A vector with sites/experimental group titles. Default to the unique values in experimental group column in your input data frame.
+#'@param Keep_Data A TRUE/FALSE variable to specify if you want to keep/remove simulated data. Default to FALSE.
+#'@param Deb A TRUE/FALSE variable to specify if you want to run the function in verbose mode. Default to FALSE.
 #'
 #'@returns A list named NMA_Results containing the data (observed and simulated communities), results of the statistical analysis on the diversity metric between observed and simulated communities, calculated standard effect sizes and stochastic intensities, standard effect size and stochastic intensity plots using the user specified diversity metric (InDeX parameter), standard effect size and stochastic intensity plots using richness (based on Kraft et al. and Santillan et al. papers), and standard effect size plot using Cohen's d method.
 #'
 #'@examples
-#'NMA(DaTa = NMA_data)
-#'
-#'NMA(DaTa = NMA_data, NSim = 100, InDeX = "invsimpson", ObSsIm = FALSE, p.adj = "BH", Plot_Level = c("L0", "L1", "L2", "L3", "L4", "L5", "L6", "L7"), Keep_Data = FALSE)
-#'
+#'\dontrun{
+#'NMA(DaTa = NMA_data, NSim = 100)
+#'NMA(DaTa = NMA_data, NSim = 100, InDeX = "invsimpson", ObSsIm = FALSE, p.adj = "BH", 
+#' Plot_Level = c("L0", "L1", "L2", "L3", "L4", "L5", "L6", "L7"), Keep_Data = FALSE)
+#'}
 #'@note All environmental variables should be converted to factor
 #'@note Environmental variables accepted are Time_point, Exp.Grp, and Replicate
 #'
@@ -55,11 +57,19 @@
 #'@references Santillan, Ezequiel, et al. "Frequency of disturbance alters diversity, function, and underlying assembly mechanisms of complex bacterial communities." npj Biofilms and Microbiomes 5.1 (2019): 1-9.
 #'@references Kraft, Nathan JB, et al. "Disentangling the drivers of β diversity along latitudinal and elevational gradients." Science 333.6050 (2011): 1755-1758.
 #'
+#' @importFrom reshape2 dcast melt
+#' @importFrom stats p.adjust t.test
+#' @importFrom utils ?
+#' @importFrom vegan specnumber diversity
+#' @importFrom effectsize cohens_d
+#' @importFrom ggplot2 aes geom_bar geom_boxplot geom_jitter ggtitle xlab ylab facet_wrap element_text element_blank element_rect theme
+#' @importFrom progress progress_bar
+#' 
 #' @export NMA
 #'
 NMA <- function(DaTa, NSim, InDeX, ObSsIm, p.adj, Plot_Level, Keep_Data, Deb){
   if(missing(DaTa)){
-    DaTa <- NMA::NMA_data
+    DaTa <- NMA_data
     print("NMA analysis using a demo dataset from Santillan et al. 2019.")
   }
   if(!is.data.frame(DaTa)){

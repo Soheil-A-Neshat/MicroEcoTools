@@ -11,6 +11,7 @@ CSR_Simulation(
   p.value.cutoff,
   Parallel,
   var.name,
+  v.equal,
   NuLl.test,
   Keep_data
 )
@@ -28,9 +29,11 @@ CSR_Simulation(
 
 \item{var.name}{Variable name used for generating output table, for example, taxa, trait, function.}
 
-\item{Keep_data}{You can store the entire calculation results including the simulated communities in a list named CSR_Sim by setting this parameter to TRUE. By default it deletes the simulated data to save space.}
-
 \item{v.equal}{Assumption of equal variance can be forced using this parameter. By default it is set to FALSE where it cannot be set to FALSE it will switch to TRUE automatically; a note will be shown in the remarks column in those cases.}
+
+\item{NuLl.test}{Using this parameter you can compare the assigned categories in your observed communities with a community generated with null hypothesis. (Beta version!) description}
+
+\item{Keep_data}{You can store the entire calculation results including the simulated communities in a list named CSR_Sim by setting this parameter to TRUE. By default it deletes the simulated data to save space.}
 }
 \value{
 This function returns a table containing the pairwise statistical comparison results. The output table can be fed into the CSR_assign function to assign CSR categories.
@@ -60,10 +63,15 @@ The input data sample:\tabular{lcrcr}{
 }
 }
 \examples{
-CSR_Simulation(DaTa = CSR_IP2G_data)
-CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 10000, p_adj = "BH")
-CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 10000, p_adj = "BH", var.name = "TAXA", NuLl.test = FALSE, Keep_data = FALSE)
+\dontrun{
+CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 10)
+CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 10, p_adj = "BH")
+CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 1000, p_adj = "BH", 
+  var.name = "TAXA", NuLl.test = FALSE, Keep_data = FALSE)
 CSR_Simulation(DaTa = CSR_TAXA_data)
-CSR_Simulation(DaTa = CSR_TAXA_data, NSim = 10000, p_adj = "BH")
-CSR_Simulation(DaTa = CSR_TAXA_data, NSim = 10000, p_adj = "BH", var.name = "TAXA", NuLl.test = FALSE, Keep_data = FALSE)
+CSR_Simulation(DaTa = CSR_TAXA_data, NSim = 1000, p_adj = "BH")
+CSR_Simulation(DaTa = CSR_TAXA_data, NSim = 1000, p_adj = "BH", 
+  var.name = "TAXA", NuLl.test = FALSE, Keep_data = FALSE)
+}
+
 }
