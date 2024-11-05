@@ -1,3 +1,7 @@
+  <!-- badges: start -->
+  [![R-CMD-check](https://github.com/Soheil-A-Neshat/MicroEcoTools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Soheil-A-Neshat/MicroEcoTools/actions/workflows/R-CMD-check.yaml)
+  <!-- badges: end -->
+
 # MicroEcoTools
 Theoretical Microbial Ecology Computational Tools
 
@@ -60,3 +64,4 @@ Simulation results may vary with fewer than 1,000 simulations.
 MicroEcoTools: an R package for comprehensive theoretical microbial ecology analysis
 Soheil Neshat, Ezequiel Santillan, Stefan Wuertz
 bioRxiv 2024.08.19.608598; doi: https://doi.org/10.1101/2024.08.19.608598
+

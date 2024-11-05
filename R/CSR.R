@@ -5,7 +5,7 @@
 #' @param dAtA Dataframe that contains experimental group, replicates, and parameters.
 #' @param var.name Variable name used for generating output table, for example, taxa, trait, function.
 #' @param p_adj P-value adjustment method. All methods mentioned in ?p.adjust function can be used ("BH", "BY", "holm", "hommel" or "none").
-#' @param Parallel Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses half of the available CPU cores to perform the calculations.
+#' @param Parallel Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses 80% of the available CPU cores to perform the calculations.
 #' @return This function returns a table containing the statistical comparison results.
 #'@details
 #'The input data sample:
@@ -45,7 +45,7 @@ Welch_ANOVA <- function(dAtA, var.name, p_adj, Parallel){
         if (as.logical(Sys.getenv("_R_CHECK_LIMIT_CORES_", "FALSE"))) {
           return(2)
         } else {
-          ncores <- max(1, floor(parallel::detectCores() - 4))
+          ncores <- max(1, floor(0.8 * parallel::detectCores()))
           return(ncores)
         }
       }
@@ -120,7 +120,7 @@ Welch_ANOVA <- function(dAtA, var.name, p_adj, Parallel){
 #' @param p_adj P-value adjustment method. All methods mentioned in ?p.adjust function can be used ("BH", "BY", "holm", "hommel" or "none").
 #' @param v.equal Assumption of equal variance can be forced using this parameter. By default it is set to FALSE where it cannot be set to FALSE it will switch to TRUE automatically; a note will be shown in the remarks column in those cases.
 #' @param p.value.cutoff A cut-off value for calling the P-value significant can be set using this parameter. The default value is 0.05.
-#' @param Parallel Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses half of the available CPU cores to perform the calculations.
+#' @param Parallel Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses 80% of the available CPU cores to perform the calculations.
 #' @return This function returns a table containing the pairwise statistical comparison results. The output table can be fed into the CSR_assign function to assign CSR categories.
 #' @details
 #'The input data sample:
@@ -163,7 +163,7 @@ pairwise_welch <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Paral
     if(missing(p.value.cutoff)) p.value.cutoff <- 0.05
     if(missing(Parallel)) Parallel <- TRUE
     print(Sys.time())
-    if(rowSums(dAtA[1,c(-1,-2)] <= 1) | rowSums(dAtA[1,c(-1,-2)] <= 100)) {
+    if(rowSums(dAtA[1,c(-1,-2)] <= 1) | rowSums(dAtA[1,c(-1,-2)]) <= 100) {
       message("  Relative abundance data detected. Converting to count data by multiplying the relative abundances by 100,000 ...")
       dAtA[,c(-1,-2)] <- dAtA[,c(-1,-2)]*100000}
     dAtA <- dAtA[,-2]
@@ -179,14 +179,13 @@ pairwise_welch <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Paral
       if (as.logical(Sys.getenv("_R_CHECK_LIMIT_CORES_", "FALSE"))) {
         return(2)
       } else {
-        ncores <- max(1, floor(parallel::detectCores() - 4))
+        ncores <- max(1, floor(0.8 * parallel::detectCores()))
         return(ncores)
       }
     }
     if(Parallel == TRUE){
-    message(paste("  Pairwise comparison of variables with variable name", var.name, ", P-value cutoff of" , p.value.cutoff, "in parallel mode."))
-    ncores <- get_cores()
-    message(paste("Using", ncores, "cores."))
+      ncores <- get_cores()
+      message(paste("  Pairwise comparison of variables with variable name", var.name, ", P-value cutoff of" , p.value.cutoff, "in parallel mode using ", ncores, "cores."))
 
     cl <- parallel::makeCluster(ncores)
     doParallel::registerDoParallel(cl)
@@ -343,6 +342,7 @@ pairwise_welch <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Paral
 #' @param p.value.cutoff A cut-off value for calling the P-value significant can be set using this parameter. The default value is 0.05.
 #' @param Parallel Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses half of the available CPU cores to perform the calculations.
 #' @param Vis Using this parameter you can make visualize the top 5 taxa/trait sorted based on P-value or abundance. The graphs will be saved as CSR_plot_sorted_p_value and CSR_plot_sorted_abundance.
+#' @param Verbose Run CSR_assign function in verbose mode to explain the assignment.
 #' @return This function returns a table containing the pairwise statistical comparison results. The output table can be fed into the CSR_assign function to assign CSR categories.
 #' 
 #'@details
@@ -378,7 +378,7 @@ pairwise_welch <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Paral
 #' @importFrom utils str
 #' 
 #' @export
-CSR_assign <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Parallel, Vis) {
+CSR_assign <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Parallel, Vis, Verbose) {
   if(missing(dAtA)) print("No data input!") else {
     if(missing(var.name)) var.name <- "Trait"
     if(missing(p_adj)) p_adj <- "BH"
@@ -386,10 +386,12 @@ CSR_assign <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Parallel,
     if(missing(Parallel)) Parallel <- TRUE
     if(missing(Vis)) Vis <- TRUE
     if(missing(v.equal)) v.equal <- FALSE
+    if(missing(Verbose)) Verbose <- FALSE
+    CSR_Results <<- vector(mode = "list", length = 0)
     j=1
     DaTa <- dAtA
-    wa <- Welch_ANOVA(dAtA = dAtA, var.name = var.name, p_adj = "BH")
-    if (colnames(dAtA[2]) != "P1"){
+    wa <- Welch_ANOVA(dAtA = dAtA, var.name = var.name, p_adj = "BH", Parallel = Parallel)
+    if (colnames(dAtA)[2] != "P1"){
       message("  Creating the pairwise Welch-ANOVA table from the input data using pairwise_welch function ...")
       pww <- pairwise_welch(dAtA = dAtA, var.name = var.name, p_adj = p_adj, v.equal = v.equal, p.value.cutoff = p.value.cutoff, Parallel = Parallel)
       dAtA <- pww
@@ -409,20 +411,46 @@ CSR_assign <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Parallel,
     for (i in unique(filtered_dAtA[,1])){
       #Assign C, S and R groups
       dAtA_subset <- filtered_dAtA[which(filtered_dAtA[,1] == i),]
-
+      
+      if(Verbose == "all"){
+        print("Data to check category assignments:")
+        print(dAtA_subset)}
       if (n.Exp.Grp > 2) {
+        if(Verbose == TRUE | Verbose == "all"){
+          cat("\n=========================================\n")
+          cat("\nChecking categories for:\n", dAtA_subset[1,1], "\n")
+          cat("C ", all(dAtA_subset[dAtA_subset[2]==Exp.Grp[1],11] != "ns") & (all(dAtA_subset[dAtA_subset[2]==Exp.Grp[1],12] == "medium") | all(dAtA_subset[dAtA_subset[2]==Exp.Grp[1],12] == "large")) & all(dAtA_subset[dAtA_subset[2]==Exp.Grp[1],4] > 0),"\n")
+          cat("S ",(all(dAtA_subset[dAtA_subset[3]==Exp.Grp[length(Exp.Grp)],11] != "ns") & (all(dAtA_subset[dAtA_subset[3]==Exp.Grp[length(Exp.Grp)],12] == "medium") | all(dAtA_subset[dAtA_subset[3]==Exp.Grp[length(Exp.Grp)],12] == "large")) & all(dAtA_subset[dAtA_subset[3]==Exp.Grp[length(Exp.Grp)],4] < 0)), "\n")
+          }
         if(all(dAtA_subset[dAtA_subset[2]==Exp.Grp[1],11] != "ns") & (all(dAtA_subset[dAtA_subset[2]==Exp.Grp[1],12] == "medium") | all(dAtA_subset[dAtA_subset[2]==Exp.Grp[1],12] == "large")) & all(dAtA_subset[dAtA_subset[2]==Exp.Grp[1],4] > 0)) {
-          a[i,2] <- "C"} else if (all(dAtA_subset[dAtA_subset[3]==Exp.Grp[length(Exp.Grp)],11] != "ns") & (all(dAtA_subset[dAtA_subset[3]==Exp.Grp[length(Exp.Grp)],12] == "medium") | all(dAtA_subset[dAtA_subset[3]==Exp.Grp[length(Exp.Grp)],12] == "large")) & all(dAtA_subset[dAtA_subset[3]==Exp.Grp[length(Exp.Grp)],4] < 0)) {
-            a[i,2] <- "S" } else if(all(dAtA_subset[1:(n.Exp.Grp-1),11] == "ns") & all(dAtA_subset[1:(n.Exp.Grp-1),12] != "ne"))a[i,2] <- "CSR" else if(all(dAtA_subset[1:(n.Exp.Grp-1),11] == "ns") & any(dAtA_subset[1:(n.Exp.Grp-1),12] == "ne")){a[i,2] <- "NA"
-            a[i,3] <- "Cannot assign CSR probably due to lack of variability in the data. Please inspect the data."} else {
-              dAtA_subset_CR <- dAtA_subset[which((dAtA_subset[,2] == Exp.Grp[1] & dAtA_subset[,3] != Exp.Grp[n.Exp.Grp])),]
-              dAtA_subset_CR[,4] <- dAtA_subset_CR[,4] * -1
-              dAtA_subset_SR <- dAtA_subset[which(dAtA_subset[,2] != Exp.Grp[1] & dAtA_subset[,3] == Exp.Grp[n.Exp.Grp]),]
-              dAtA_subset_R <- rbind(dAtA_subset_CR, dAtA_subset_SR)
-              dAtA_subset_R <- dAtA_subset_R[which(dAtA_subset_R[,11] == "*" & (dAtA_subset_R[,12] == "medium" | dAtA_subset_R[,12] == "large")),]
-              if(all(dAtA_subset_R[,4] > 0) & any(dAtA_subset_R[,2] == Exp.Grp[1]) & any(dAtA_subset_R[,3] == Exp.Grp[n.Exp.Grp])) {
-                a[i,2] <- "R"}
-            }
+          a[i,2] <- "C"
+          if(Verbose){
+            print ("Classified under C category!")}
+            } else if (all(dAtA_subset[dAtA_subset[3]==Exp.Grp[length(Exp.Grp)],11] != "ns") & (all(dAtA_subset[dAtA_subset[3]==Exp.Grp[length(Exp.Grp)],12] == "medium") | all(dAtA_subset[dAtA_subset[3]==Exp.Grp[length(Exp.Grp)],12] == "large")) & all(dAtA_subset[dAtA_subset[3]==Exp.Grp[length(Exp.Grp)],4] < 0)) {
+              a[i,2] <- "S" 
+              if(Verbose == TRUE | Verbose == "all"){print ("Classified under S category!")}
+                } else if(all(dAtA_subset[1:(n.Exp.Grp-1),11] == "ns") & all(dAtA_subset[1:(n.Exp.Grp-1),12] != "ne")){a[i,2] <- "CSR" 
+                    }else if(all(dAtA_subset[1:(n.Exp.Grp-1),11] == "ns") & any(dAtA_subset[1:(n.Exp.Grp-1),12] == "ne")){a[i,2] <- "NA"
+                      a[i,3] <- "Cannot assign CSR probably due to lack of variability in the data. Please inspect the data."} else {
+                      dAtA_subset_CR <- dAtA_subset[which((dAtA_subset[,2] == Exp.Grp[1] & dAtA_subset[,3] != Exp.Grp[n.Exp.Grp])),]
+                      dAtA_subset_CR[,4] <- dAtA_subset_CR[,4] * -1
+                      dAtA_subset_SR <- dAtA_subset[which(dAtA_subset[,2] != Exp.Grp[1] & dAtA_subset[,3] == Exp.Grp[n.Exp.Grp]),]
+                      dAtA_subset_R <- rbind(dAtA_subset_CR, dAtA_subset_SR)
+                      dAtA_subset_R <- dAtA_subset_R[which(dAtA_subset_R[,11] == "*" & (dAtA_subset_R[,12] == "medium" | dAtA_subset_R[,12] == "large")),]
+                      if(Verbose == "all"){print ("Data to check if the trait is an R:")}
+                      if (Verbose == "all") {if (exists("dAtA_subset_R")) print(dAtA_subset_R)  }
+                      if(all(dAtA_subset_R[,4] > 0) & any(dAtA_subset_R[,2] == Exp.Grp[1]) & any(dAtA_subset_R[,3] == Exp.Grp[n.Exp.Grp])) {
+                      a[i,2] <- "R"
+                      if(Verbose == TRUE | Verbose == "all"){print ("Classified under R category!")}}
+                      }           
+        if(Verbose == TRUE | Verbose == "all") {
+          if (exists("dAtA_subset_R")) cat("R ",(all(dAtA_subset_R[,4] > 0) & any(dAtA_subset_R[,2] == Exp.Grp[1]) & any(dAtA_subset_R[,3] == Exp.Grp[n.Exp.Grp])), "\n") else{
+              cat("R"," FALSE\n")
+            a[i,2] <- "CSR" 
+            if(Verbose == TRUE | Verbose == "all"){ if(a[i,2] == "CSR")print ("\nClassified under CSR category!\n")}
+          }
+          
+          }
       }else {
         message("CSR assignment with only two groups assuming these groups represent no disturbance and press disturbance.\nPlease note that intermediate groups, namely, CS, CR, and SR will be wrongly categorised.\nIf possible please include at least one experimental group representing the intermediate level of disturbance.")
         if(all(dAtA_subset[,11] != "ns") & (dAtA_subset[1,12] == "medium" | dAtA_subset[1,12] == "large") & dAtA_subset[1,4] > 0) {
@@ -432,27 +460,66 @@ CSR_assign <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Parallel,
         }}
 
     dAtA_remain <- a[,1][which(a[,2] == "")]
-
+    if(Verbose == TRUE | Verbose == "all"){
+      cat("Traits yet to be assigned with a category:\n", dAtA_remain, "\n")
+    }
+    
     for (ii in dAtA_remain){
       dAtA_subset <- filtered_dAtA[which(filtered_dAtA[,1] == ii),]
+      dAtA_subset_CR <- data.frame()
+      dAtA_subset_CS <- data.frame()
+      dAtA_subset_SR <- data.frame()
+      
       dAtA_subset_CR <- dAtA_subset[which((dAtA_subset[,2] == Exp.Grp[1] & dAtA_subset[,3] != Exp.Grp[n.Exp.Grp]) & dAtA_subset[,11] != "ns"),]
-      dAtA_subset_SR <- dAtA_subset[which(dAtA_subset[,2] != Exp.Grp[1] & dAtA_subset[,3] == Exp.Grp[n.Exp.Grp] & dAtA_subset[,11] != "ns"),]
       dAtA_subset_CS <- dAtA_subset[which(dAtA_subset[,2] == Exp.Grp[1] & dAtA_subset[,3] == Exp.Grp[n.Exp.Grp] & dAtA_subset[,11] != "ns"),]
+      dAtA_subset_SR <- dAtA_subset[which(dAtA_subset[,2] != Exp.Grp[1] & dAtA_subset[,3] == Exp.Grp[n.Exp.Grp] & dAtA_subset[,11] != "ns"),]
+      
+      if(Verbose == TRUE | Verbose == "all"){
+        cat("=========================================\n")
+        cat("Checking compound categories:\n",dAtA_subset[1,1], "\n")
+        if(exists("dAtA_subset_CS") & exists("dAtA_subset_SR")){
+        cat("CR ", (length(dAtA_subset_CS[,4]) > 0 & length(dAtA_subset_SR[,4]) > 0) & (all(dAtA_subset_CS[,4] > 0) & any(dAtA_subset_SR[,4] > 0) & !any(dAtA_subset_SR[,4] < 0)), "\n")
+        }else cat("CR ", "  FAlse\n")
+        }
+      if(Verbose == TRUE | Verbose == "all"){
+        if(exists("dAtA_subset_CR") & exists("dAtA_subset_CS")){
+        cat("SR ", (length(dAtA_subset_CR[,4]) > 0 & length(dAtA_subset_CS[,4]) > 0) & (any(dAtA_subset_CR[,4] < 0) & !any(dAtA_subset_CR[,4] > 0)  & dAtA_subset_CS[,4] < 0), "\n")
+        }else cat("SR ", "  FAlse\n")
+          }
+      if(Verbose == TRUE | Verbose == "all"){
+        if(exists("dAtA_subset_CR") & exists("dAtA_subset_SR") & exists("dAtA_subset_CS")){
+        cat("CS ",(length(dAtA_subset_CR[,4]) > 0 & length(dAtA_subset_SR[,4]) > 0 & length(dAtA_subset_CS[,11]) == 0) & (all(dAtA_subset_CR[,4] > 0) & all(dAtA_subset_SR[,4] < 0)), "\n")        
+        }else cat("CS ","  FAlse\n")
+          }
+      if(Verbose == "all"){
+        print ("dAtA_subset_CR")
+        if (exists("dAtA_subset_CR")) print (dAtA_subset_CR)
+        print ("dAtA_subset_SR")
+        if (exists("dAtA_subset_SR")) print (dAtA_subset_SR)
+        print ("dAtA_subset_CS")
+        if (exists("dAtA_subset_CS"))print (dAtA_subset_CS)
+      }
       if (length(dAtA_subset_CR[,4]) > 0 & length(dAtA_subset_CS[,4]) > 0){
       if(any(dAtA_subset_CR[,4] < 0) & !any(dAtA_subset_CR[,4] > 0)  & dAtA_subset_CS[,4] < 0) {
-        a[ii,2] <- "SR"} }
+        a[ii,2] <- "SR"
+        if(Verbose == TRUE | Verbose == "all"){print ("Classified under SR category!")}} }
       if(length(dAtA_subset_CS[,4]) > 0 & length(dAtA_subset_SR[,4]) > 0) {
       if(all(dAtA_subset_CS[,4] > 0) & any(dAtA_subset_SR[,4] > 0) & !any(dAtA_subset_SR[,4] < 0)) {
-          a[ii,2] <- "CR"} }
+          a[ii,2] <- "CR"
+          if(Verbose == TRUE | Verbose == "all"){print ("Classified under CR category!")}} }
       if(length(dAtA_subset_CR[,4]) > 0 & length(dAtA_subset_SR[,4]) > 0 & length(dAtA_subset_CS[,11]) == 0) {
       if(all(dAtA_subset_CR[,4] > 0) & all(dAtA_subset_SR[,4] < 0)) {
-            a[ii,2] <- "CS"} }
+            a[ii,2] <- "CS"
+            if(Verbose == TRUE | Verbose == "all"){print ("Classified under CS category!")}} }
       if (a[ii,2] == "") {
-        a[ii,2] <- "CSR"}
+        a[ii,2] <- "CSR"
+        if(Verbose == TRUE | Verbose == "all"){print ("Classified under CSR category!")}}
+      if(Verbose == TRUE | Verbose == "all")cat("\n")
 
 
             }
-
+    if(Verbose == TRUE | Verbose == "all") cat("\n=========================================\n")
+      
     colnames(a) <- c(paste(var.name), "CSR categories", "Remarks_CSR")
     a <- merge(wa[, c(1, 2, 3, 5)], a, all.x = TRUE)
     vis_data_C_p <- data.frame()
@@ -572,8 +639,12 @@ CSR_assign <- function(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Parallel,
     }}, error = function(e) {
   message("Warning: visualisation cannot be performed due to insufficient number of traits categorised as C, S or R ")
   })
-
-    return(a)
+    if(sys.nframe() > 1){return(a)} else{
+    CSR_Results <<- list(wa, pww, a)
+    names(CSR_Results) <<-c("Welch_ANOVA", "Pairwise_Welch_ANOVA", "CSR_assignments")
+    print("Thanks for using MicroEcoTools!\nResults as stored in CSR_Results list object.")
+    cat("To see the results you can use\nCSR_Results$Welch_ANOVA\nCSR_Results$Pairwise_Welch_ANOVA\nCSR_Results$CSR_assignments.\n\n")
+    return(a)}
   }}
 
 
