@@ -64,7 +64,7 @@
 #'   \item{periplasmic.space}{Abundance of the periplasmic space (numeric).}
 #'   \item{ribosome}{Abundance of the ribosome (numeric).}
 #' }
-#' @source Experimental data from CSR IP2G metagenomics study.
+#' @source Experimental data from CSR IP2G metagenomics study. Santillan, Ezequiel, et al. "Trait‐based life‐history strategies explain succession scenario for complex bacterial communities under varying disturbance." Environmental microbiology 21.10 (2019): 3751-3764.
 "CSR_IP2G_data"
 
 #' @title NMA_data dataset
@@ -77,6 +77,7 @@
 #'   \item{rk1, rk2, ..., rk1507}{Counts for different taxa (integers).}
 #' }
 #' @details This dataset contains the abundance of microbial taxa for different experimental groups, replicates, and time points. The columns `rk1` to `rk999` represent different microbial taxa, and their values indicate the count of each taxon in the respective sample.
+#' @source Santillan, Ezequiel, et al. "Frequency of disturbance alters diversity, function, and underlying assembly mechanisms of complex bacterial communities." npj Biofilms and Microbiomes 5.1 (2019): 8.
 #' @examples
 #' data(NMA_data)
 #' head(NMA_data)
@@ -1596,5 +1597,5 @@
 #'   \item{unclassified.Mollicutes..miscellaneous. (integer)}{Abundance of this taxa/trait}
 #'   \item{unclassified.Rickettsiaceae (integer)}{Abundance of this taxa/trait}
 #' }
-#' @source Experimental data from 3CA perturbation experiment.
+#' @source Experimental data from 3CA perturbation experiment. Santillan, Ezequiel, et al. "Trait‐based life‐history strategies explain succession scenario for complex bacterial communities under varying disturbance." Environmental microbiology 21.10 (2019): 3751-3764.
 "CSR_TAXA_data"

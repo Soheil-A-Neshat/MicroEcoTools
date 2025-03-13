@@ -1,0 +1,160 @@
+---
+title: "MicroEcoTools"
+author: "Soheil A. Neshat"
+date: "2025-03-10"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{MicroEcoTools Vignette}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+# Set global options for code chunks
+knitr::opts_chunk$set(echo = TRUE, warning = TRUE, message = TRUE)
+# Load the MicroEcoTools package
+devtools::load_all()
+```
+
+## Introduction
+
+MicroEcoTools is an R package designed to provide theoretical tools for
+microbial community analysis. The package includes functions for:
+
+Comparing traits or taxa across experimental groups using Welch-ANOVA.
+Performing pairwise comparisons and assigning CSR (Competitor–Stress
+tolerant–Ruderal) categories. Simulating community data to assess the
+probability of CSR assignments. Calculating diversity metrics such as
+Hill diversity. In this vignette, we demonstrate how to prepare your
+data (including converting SummarizedExperiment or phyloseq objects) and
+run the core analyses provided by the package.
+
+## Installation
+
+This chunk installs the MicroEcoTools package.
+
+```{r installation}
+if (!requireNamespace("devtools", quietly = TRUE))
+  install.packages("devtools")
+devtools::install_github("Soheil-A-Neshat/MicroEcoTools")
+```
+
+## Data prepration
+
+MicroEcoTools functions require input data in a data frame format. The
+expected format is:
+
+Column 1: Experimental group (e.g., Exp.Grp) Column 2: Replicate (e.g.,
+Replicate) Remaining columns: Count or abundance data for taxa or traits
+
+If your data are in a SummarizedExperiment or phyloseq object, the
+functions automatically check the input and call the helper function
+?convert_to_microecotools_df to convert it
+into the required format.
+
+## Example dataset
+
+For demonstration, we have included three datasets from the following references:
+1. Santillan, Ezequiel, et al. "Trait‐based life‐history strategies explain succession scenario for complex bacterial communities under varying disturbance." Environmental microbiology 21.10 (2019): 3751-3764.
+2. Santillan, Ezequiel, et al. "Frequency of disturbance alters diversity, function, and underlying assembly mechanisms of complex bacterial communities." npj Biofilms and Microbiomes 5.1 (2019): 8.
+
+Explanation for the study, data, etc ....
+
+```{r CSR IP2G data, echo=TRUE}
+dim(CSR_IP2G_data)
+head(CSR_IP2G_data)
+```
+
+```{r CSR IP2G data, echo=TRUE}
+dim(CSR_TAXA_data)
+head(CSR_TAXA_data)
+```
+
+```{r Null model analysis data, echo=TRUE}
+dim(NMA_data)
+head(NMA_data)
+```
+
+
+
+##CSR Assignment CSR_assign function analyses the dataset and assigns
+competitive, stress-tolerant and ruderal categories to traits/taxa which
+are abundant in undisturbed, highly disturbed and intermediately
+disturbed communities. The output for this function is a list containing
+comparison tables and plots.
+
+```{r CSR assignment, echo=FALSE}
+# Perform CSR category assignment
+csr_result <- CSR_assign(dAtA = CSR_IP2G_data, var.name = "Trait", p_adj = "BH",
+                         v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE, Verbose = FALSE)
+summary.CSR_assignments(csr_result$CSR_assignments)
+```
+
+```{r CSR plotting, echo=FALSE}
+# Plot the CSR plot:
+# Traits sorted based on abundance 
+CSR_Plot(CSR_results = csr_result, plot_type = "abundance")
+# Traits sorted based on p-value
+CSR_Plot(CSR_results = csr_result, plot_type = "p_value")
+```
+
+```{r CSR assignment summary, echo=FALSE}
+# Summary of the CSR assignment can be seen using:
+summary.CSR_assignments(csr_result$CSR_assignments)
+```
+
+##CSR Assignment with simulation CSR_simulation function generates
+simulated communities with similar multinomial distribution to the
+observed communities and perfroms CSR category assignment. The
+difference between this function and CSR_assign is that this function
+calculates a probability value which shows accuracy of the category
+assignment.
+
+```{r CSR assignment with simulation, echo=FALSE}
+# Run CSR_Simulation on the dataset.
+simulation_result <- CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 2, p_adj = "BH",
+                                    var.name = "Trait", v.equal = FALSE, p.value.cutoff = 0.05,
+                                    Parallel = TRUE, NuLl.test = FALSE, Keep_data = FALSE)
+summary.CSR_simulation(simulation_result)
+```
+
+##Welch-ANOVA Analysis The Welch_ANOVA function compares traits or taxa
+across experimental groups using Welch's ANOVA. It automatically
+switches to an equal variance test if needed.
+
+```{r Welch-Anova, echo=FALSE}
+# Run Welch_ANOVA on the example dataset.
+result_welch <- Welch_ANOVA(dAtA = CSR_IP2G_data, var.name = "Trait", p_adj = "BH", Parallel = FALSE)
+# Print the resulting comparison table
+summary.Welch_ANOVA(result_welch)
+```
+
+##Pairwise Welch-Anova This function performs a pairwise comparison for
+taxa/traits between experimental groups.
+
+```{r Pairwise Welch-Anova, echo=FALSE}
+# Generate a pairwise comparison table using pairwise_welch.
+pairwise_result <- pairwise_welch(dAtA = CSR_IP2G_data, var.name = "Trait", p_adj = "BH",
+                                  v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+summary.Pairwise_welch(pairwise_result)
+```
+
+##Null model analysis We can assess the relative contribution of
+stochastic and deterministic assembly mechanisms in a community using
+the NMA function. Running the following code chunk does this analysis.
+This function takes in the observed communities, pool all the taxa and
+generate random communities from the pool. Then, it compares the
+observed communities and randomly generated communities to calculate an
+effect size. The higher the effect size the more deterministic the
+community assembly.
+
+```{r Null model analysis, echo=FALSE}
+nma_results <- NMA(DaTa = NMA_data, NSim = 10, InDeX = "invsimpson")
+#you can look at the standard effect size plot generated using richness as the measure of diversity using
+nma_results$Kraft_SES_plot
+#To see the plot generated for standard effect size using the specified diversity index use
+nma_results$SES_plot
+```

@@ -6,34 +6,34 @@
 \usage{
 CSR_Simulation(
   DaTa,
-  NSim,
-  p_adj,
-  p.value.cutoff,
-  Parallel,
-  var.name,
-  v.equal,
-  NuLl.test,
-  Keep_data
+  NSim = 1000,
+  p_adj = "BH",
+  p.value.cutoff = 0.05,
+  Parallel = TRUE,
+  var.name = "Trait",
+  v.equal = FALSE,
+  NuLl.test = FALSE,
+  Keep_data = FALSE
 )
 }
 \arguments{
 \item{DaTa}{Dataframe that contains experimental group, replicates, and parameters.}
 
-\item{NSim}{Number of simulations minimum 1000, recomended 10000.}
+\item{NSim}{Number of simulations minimum 1000, recomended 10000. Defaults to \code{1000}.}
 
-\item{p_adj}{P-value adjustment method. All methods mentioned in ?p.adjust function can be used ("BH", "BY", "holm", "hommel" or "none").}
+\item{p_adj}{P-value adjustment method. All methods mentioned in \code{\link[stats]{p.adjust}} function can be used ("BH", "BY", "holm", "hommel" or "none").  Defaults to \code{"BH"}.}
 
-\item{p.value.cutoff}{A cut-off value for calling the P-value significant can be set using this parameter. The default value is 0.05.}
+\item{p.value.cutoff}{A cut-off value for calling the P-value significant can be set using this parameter. The default value is 0.05.   Defaults to \code{0.05}.}
 
-\item{Parallel}{Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses half of the available CPU cores to perform the calculations.}
+\item{Parallel}{Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses half of the available CPU cores to perform the calculations. Defaults to \code{TRUE}.}
 
-\item{var.name}{Variable name used for generating output table, for example, taxa, trait, function.}
+\item{var.name}{Variable name used for generating output table, for example, taxa, trait, function.  Defaults to \code{"Trait"}.}
 
-\item{v.equal}{Assumption of equal variance can be forced using this parameter. By default it is set to FALSE where it cannot be set to FALSE it will switch to TRUE automatically; a note will be shown in the remarks column in those cases.}
+\item{v.equal}{Assumption of equal variance can be forced using this parameter. By default it is set to FALSE where it cannot be set to FALSE it will switch to TRUE automatically; a note will be shown in the remarks column in those cases.   Defaults to \code{FALSE}.}
 
-\item{NuLl.test}{Using this parameter you can compare the assigned categories in your observed communities with a community generated with null hypothesis. (Beta version!) description}
+\item{NuLl.test}{Using this parameter you can compare the assigned categories in your observed communities with a community generated with null hypothesis. (Beta version!).   Defaults to \code{FALSE}.}
 
-\item{Keep_data}{You can store the entire calculation results including the simulated communities in a list named CSR_Sim by setting this parameter to TRUE. By default it deletes the simulated data to save space.}
+\item{Keep_data}{You can store the entire calculation results including the simulated communities in a list named CSR_Sim by setting this parameter to TRUE. By default it deletes the simulated data to save space. Defaults to \code{FALSE}.}
 }
 \value{
 This function returns a table containing the pairwise statistical comparison results. The output table can be fed into the CSR_assign function to assign CSR categories.
@@ -45,7 +45,7 @@ This function generates simulated datasets using the input dataset that have a s
 It is advised to use at least 1000 simulations to get more reliable results (recomended NSim = 10000).
 After performing the simulation it passes the data to the CSR_assign function to assign CSR categories.
 
-This function assigns CSR categories to the input variables using the output table from the ?pairwise_welch function.
+This function assigns CSR categories to the input variables using the output table from the \code{\link[MicroEcoTools]{pairwise_welch}} function.
 To do so, it looks at the pairwise comparisons and assigns C to the ones abundant in no disturbance group, S to the ones abundant in high disturbance group, and R to the ones abundant in intermediate disturbance groups.
 It also assigns intermediate categories, CR, CS, and SR to groups that are abundant in no-disturbance and intermediate-disturbance, no-disturbance and high-disturbance, and intermediate-disturbance and high-disturbance, respectively.
 Traits that are not differentially abundant in any groups will be assigned to the CSR category.
@@ -62,16 +62,20 @@ The input data sample:\tabular{lcrcr}{
    X1 \tab 3 \tab 13 \tab 25 \tab 3601 \cr
 }
 }
+\note{
+The input data can be relative abundance or count data. The user must ensure the total count across groups is similar.
+}
 \examples{
+# Generally, the number of replicates in perturbation experiments cannot provide enough statistical power to reveal the effects.
+# CSR_Simulation generates a number of simulated communities with similar multinomial distributions as the observed communities.
+# This example uses abundance data from a perturbation experiment described in Santillan et al. (2019).
+# The dataset \code{\link[MicroEcoTools]{CSR_IP2G_data}} is included in the MicroEcoTools package.
+# Running the command below generates simulated communities and performs \code{\link[MicroEcoTools]{CSR_assign}} on the observed and simulated communities.
+# This command automatically assigns C, S, and R traits to traits abundant in undisturbed, highly diturbed and intermediately disturbed experimental groups.
+# In addition, it assigns intermediate groups CS, CR, and SR to groups prevalent in two categories, e.g., abundant in undisturbed and intermediately disturbed in compare to highly distrubed --> CR. 
+# At the end, it generates a table showing the percentage of times a trait was assigned to different categories.
 \dontrun{
-CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 10)
-CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 10, p_adj = "BH")
-CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 1000, p_adj = "BH", 
-  var.name = "TAXA", NuLl.test = FALSE, Keep_data = FALSE)
-CSR_Simulation(DaTa = CSR_TAXA_data)
-CSR_Simulation(DaTa = CSR_TAXA_data, NSim = 1000, p_adj = "BH")
-CSR_Simulation(DaTa = CSR_TAXA_data, NSim = 1000, p_adj = "BH", 
-  var.name = "TAXA", NuLl.test = FALSE, Keep_data = FALSE)
+csr_simulation <- CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 1000, p_adj = "BH", var.name = "Trait", NuLl.test = FALSE, Keep_data = FALSE)
 }
 
 }

@@ -1,7 +1,7 @@
 Package: MicroEcoTools
 Type: Package
 Title: Theoretical Microbial Ecology Frameworks package
-Version: 0.3.0
+Version: 0.4.0
 Author: Soheil A. Neshat, Ezequiel Santillan, Stefan Wuertz
 Maintainer: The package maintainer <soheilneshat@gmail.com>
 Description: This package contains computational tools for applying theoretical microbial ecology frameworks on community data. Currently, it contains two frameworks, namely, intermediate stochastisity and Grime's trait-based frameworks.
@@ -21,11 +21,13 @@ Imports:
   doParallel,
   foreach,
   stringr,
-  purrr
+  purrr,
+  tidyverse,
+  plyr
 Suggests:
-    plyr,
     testthat (>= 3.0.0),
-    tidyverse
+    phyloseq,
+    SummarizedExperiment
 RoxygenNote: 7.3.1
 Depends: 
     R (>= 3.5)

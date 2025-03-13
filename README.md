@@ -60,6 +60,10 @@ More details are available here: https://www.biorxiv.org/content/10.1101/2024.08
 Requires at least two biological replicates for analysis.
 Simulation results may vary with fewer than 1,000 simulations.
 
+## Unit Test
+Unit tests was performed using testthat package and coverage assessed through covr:
+  MicroEcoTools Coverage: 78.00%
+
 ## Citation
 MicroEcoTools: an R package for comprehensive theoretical microbial ecology analysis
 Soheil Neshat, Ezequiel Santillan, Stefan Wuertz

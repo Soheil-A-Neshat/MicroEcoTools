@@ -4,37 +4,46 @@
 \alias{Welch_ANOVA}
 \title{Welch-ANOVA comparison (MicroEcoTools)}
 \usage{
-Welch_ANOVA(dAtA, var.name, p_adj, Parallel)
+Welch_ANOVA(dAtA, var.name = "Variable", p_adj = "BH", Parallel = TRUE)
 }
 \arguments{
-\item{dAtA}{Dataframe that contains experimental group, replicates, and parameters.}
+\item{dAtA}{Data frame containing the experimental group, replicates, and measurement columns.}
 
-\item{var.name}{Variable name used for generating output table, for example, taxa, trait, function.}
+\item{var.name}{Character string specifying the variable name to be used in the output table. Defaults to \code{"Variable"}.}
 
-\item{p_adj}{P-value adjustment method. All methods mentioned in ?p.adjust function can be used ("BH", "BY", "holm", "hommel" or "none").}
+\item{p_adj}{Character string specifying the p-value adjustment method (as per \code{\link[stats]{p.adjust}}). Defaults to \code{"BH"}.}
 
-\item{Parallel}{Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses half of the available CPU cores to perform the calculations.}
+\item{Parallel}{Logical value. If TRUE, the function uses parallel processing (80% of available CPU cores) to speed up calculations.
+Defaults to \code{TRUE}.}
 }
 \value{
-This function returns a table containing the statistical comparison results.
+A data frame (table) containing the following columns:
+        - The name of each trait/taxa,
+        - Its Welch-ANOVA p-value,
+        - The test method used,
+        - A remarks column indicating if the fallback equal variance test was applied,
+        - An adjusted p-value column.
 }
 \description{
-Statistical comparison for traits/taxa between experimental groups using Welch-ANOVA or ANOVA. This function uses oneway test assuming non-equal variance. In cases where the assumptions are not valid it chooses equal variance by automatically setting var.equal parameter to TRUE.
+Statistical comparison for traits/taxa between experimental groups using Welch-ANOVA (or ANOVA when variance assumptions fail).
+             This function uses a oneway test with the assumption of non-equal variances and automatically falls back to the equal-variance test if needed.
 }
 \details{
-The input data sample:\tabular{lcrcr}{
-   Exp.Grp \tab Replicate \tab TAXA1 \tab TAXA2 \tab TAXA3 \cr
-   X0 \tab 1 \tab 10 \tab 91 \tab 68 \cr
-   X0 \tab 2 \tab 11 \tab 86 \tab 70 \cr
-   X0 \tab 3 \tab 12 \tab 84 \tab 70 \cr
-   X1 \tab 1 \tab 15 \tab 30 \tab 3452 \cr
-   X1 \tab 2 \tab 19 \tab 45 \tab 3274 \cr
-   X1 \tab 3 \tab 13 \tab 25 \tab 3601 \cr
-}
+The input data sample is expected to be structured as follows:
+
+| Exp.Grp | Replicate | TAXA1 | TAXA2 | TAXA3 |
+|---------|:---------:|------:|------:|------:|
+| X0      | 1         | 10    | 91    | 68    |
+| X0      | 2         | 11    | 86    | 70    |
+| X0      | 3         | 12    | 84    | 70    |
+| X1      | 1         | 15    | 30    | 3452  |
+| X1      | 2         | 19    | 45    | 3274  |
+| X1      | 3         | 13    | 25    | 3601  |
 }
 \examples{
 \dontrun{
-Welch_ANOVA(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH", Parallel = TRUE)
-Welch_ANOVA(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH", Parallel = TRUE)
+  # Using the CSR_IP2G_data dataset included in the package to generate a comparison table.
+  wa_results <- Welch_ANOVA(dAtA = CSR_IP2G_data, var.name = "Traits", p_adj = "BH", Parallel = TRUE)
 }
+
 }

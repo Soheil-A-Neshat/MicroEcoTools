@@ -68,7 +68,7 @@ A data frame with 24 rows and 59 variables:
 }
 }
 \source{
-Experimental data from CSR IP2G metagenomics study.
+Experimental data from CSR IP2G metagenomics study. Santillan, Ezequiel, et al. "Trait‐based life‐history strategies explain succession scenario for complex bacterial communities under varying disturbance." Environmental microbiology 21.10 (2019): 3751-3764.
 }
 \usage{
 CSR_IP2G_data

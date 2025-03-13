@@ -13,6 +13,9 @@ A data frame with 24 rows and 1000+ columns:
   \item{rk1, rk2, ..., rk1507}{Counts for different taxa (integers).}
 }
 }
+\source{
+Santillan, Ezequiel, et al. "Frequency of disturbance alters diversity, function, and underlying assembly mechanisms of complex bacterial communities." npj Biofilms and Microbiomes 5.1 (2019): 8.
+}
 \usage{
 NMA_data
 }

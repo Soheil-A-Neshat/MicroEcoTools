@@ -4,71 +4,70 @@
 \alias{NMA}
 \title{Theoretical Microbial Ecology Tools (MicroEcoTools)}
 \usage{
-NMA(DaTa, NSim, InDeX, ObSsIm, p.adj, Plot_Level, Keep_Data, Deb)
+NMA(
+  DaTa,
+  NSim = 1000,
+  InDeX = "invsimpson",
+  ObSsIm = FALSE,
+  p.adj = "BH",
+  Plot_Level,
+  Keep_Data = FALSE,
+  Deb = FALSE
+)
 }
 \arguments{
-\item{DaTa}{A data frame containing the environmental and community data in long format with column names of Exp.Grp, Replicate, Time_point, TAXA, and Count Please note that you need at least two replicates for each experimental group.}
+\item{DaTa}{A data frame containing environmental and community data in long format with column names: 
+Exp.Grp, Replicate, Time_point, TAXA, and Count. At least two replicates per experimental group are required.}
 
-\item{NSim}{A number to specify the number of simulations (values bellow 1000 are not recomended). Default to 1000 simulations.}
+\item{NSim}{A number specifying the number of simulations (values below 1000 are not recommended). Defaults to \code{1000}.}
 
-\item{InDeX}{A diversity index from vegan package ("shannon", "simpson" or "invsimpson"). Default to "invsimpson.}
+\item{InDeX}{A diversity index from the vegan package ("shannon", "simpson", or "invsimpson"). Defaults to \code{"invsimpson"}.}
 
-\item{ObSsIm}{A dataset with multinomial distribution using the observed dataset as probability matrix will be generated.}
+\item{ObSsIm}{Logical. If TRUE, a dataset with a multinomial distribution using the observed data as a probability matrix is generated. Defaults to \code{FALSE}.}
 
-\item{p.adj}{A p-value correction method ("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"). Default to "Benjamini & Hochberg".}
+\item{p.adj}{A p-value correction method ("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", or "none"). Defaults to \code{"BH"}.}
 
-\item{Plot_Level}{A vector with sites/experimental group titles. Default to the unique values in experimental group column in your input data frame.}
+\item{Plot_Level}{A vector with experimental group titles. Defaults to the unique values of the Exp.Grp column in the input data.}
 
-\item{Keep_Data}{A TRUE/FALSE variable to specify if you want to keep/remove simulated data. Default to FALSE.}
+\item{Keep_Data}{Logical. If TRUE, simulated data is kept; otherwise, it is removed to save space. Defaults to \code{FALSE}.}
 
-\item{Deb}{A TRUE/FALSE variable to specify if you want to run the function in verbose mode. Default to FALSE.}
+\item{Deb}{Logical. If TRUE, the function runs in verbose mode. Defaults to \code{FALSE}.}
 }
 \value{
-A list named NMA_Results containing the data (observed and simulated communities), results of the statistical analysis on the diversity metric between observed and simulated communities, calculated standard effect sizes and stochastic intensities, standard effect size and stochastic intensity plots using the user specified diversity metric (InDeX parameter), standard effect size and stochastic intensity plots using richness (based on Kraft et al. and Santillan et al. papers), and standard effect size plot using Cohen's d method.
+A list (NMA_Results) containing:
+  \itemize{
+    \item The original data (DaTa)
+    \item Observed and simulated community data
+    \item Diversity metrics and test statistics (including p-values and effect sizes)
+    \item Processed data for plotting (e.g., SES, SI, Kraft models, Cohen's d, Hill diversity)
+    \item A set of ggplot objects for visualization (if generated)
+    \item The NMA parameters used in the analysis
+  }
 }
 \description{
-The tools implemented in the MicroEcoTools help researchers and practitioners to apply theoretical frameworks to community data. The current version covers theories connecting assembly mechanisms to diversity and functions. These theories are the intermediate stochasticity hypothesis which is covered in the NMA function and a trait-based framework (Grime's competitor-stress tolerant-ruderal) which is covered in the CSR functions.
-
-Using a null model approach, this package tests the relative contribution of the assembly mechanisms (stochastic and deterministic) in a given community. Based on the observed communities, assuming that the community structure was randomly shaped, using a multinomial distribution, this package simulates random communities. A diversity metric will then be used to calculate the standard effect size between the observed communities and randomly generated communities.
-}
-\details{
-The input data can be in wide or long formats. Please see the examples below:
-
-Sample 1 (wide format)\tabular{lcrcr}{
-   Exp.Grp \tab Replicate \tab Time_point \tab TAXA1 \tab TAXA2 \cr
-   X0 \tab 1 \tab 1 \tab 91 \tab 68 \cr
-   X0 \tab 2 \tab 1 \tab 86 \tab 70 \cr
-   X0 \tab 3 \tab 1 \tab 84 \tab 70 \cr
-   X1 \tab 1 \tab 1 \tab 30 \tab 3452 \cr
-   X1 \tab 2 \tab 1 \tab 45 \tab 3274 \cr
-   X1 \tab 3 \tab 1 \tab 25 \tab 3601 \cr
-}
-
-
-Sample 2 (long format)\tabular{lcrcr}{
-   Exp.Grp \tab Replicate \tab Time_point \tab TAXA \tab Count \cr
-   I \tab 1 \tab 1 \tab rk1 \tab 68 \cr
-   I \tab 2 \tab 1 \tab rk1 \tab 70 \cr
-   X0 \tab 1 \tab 1 \tab rk1 \tab 3452 \cr
-   X0 \tab 3 \tab 1 \tab rk1 \tab 3274 \cr
-   X0 \tab 3 \tab 1 \tab rk1 \tab 3601 \cr
-}
+The tools implemented in MicroEcoTools help researchers and practitioners apply theoretical frameworks to community data. 
+The current version covers theories connecting assembly mechanisms to diversity and functions. In particular, the NMA function implements 
+a null model approach (based on a multinomial distribution) to assess the relative contribution of stochastic versus deterministic assembly 
+mechanisms.
 }
 \note{
-All environmental variables should be converted to factor
+All environmental variables should be converted to factors.
 
-Environmental variables accepted are Time_point, Exp.Grp, and Replicate
+Accepted environmental variables: Time_point, Exp.Grp, and Replicate.
 }
-\section{section title}{
-Null model analysis (NMA)
+\section{Null model analysis (NMA)}{
+
+Using a null model approach, this function tests the relative contribution of assembly mechanisms in a given community. 
+Based on the observed communities, it simulates random communities using a multinomial distribution. A diversity metric is then used 
+to calculate the standard effect size between the observed communities and the simulated (null) communities.
 }
 
 \examples{
 \dontrun{
-NMA(DaTa = NMA_data, NSim = 100)
-NMA(DaTa = NMA_data, NSim = 100, InDeX = "invsimpson", ObSsIm = FALSE, p.adj = "BH", 
-Plot_Level = c("L0", "L1", "L2", "L3", "L4", "L5", "L6", "L7"), Keep_Data = FALSE)
+  # Perform null model analysis on experimental data from a perturbation experiment.
+  nma_results <- NMA(DaTa = NMA_data, NSim = 1000)
 }
+
 }
 \references{
 Santillan, Ezequiel, et al. "Frequency of disturbance alters diversity, function, and underlying assembly mechanisms of complex bacterial communities." npj Biofilms and Microbiomes 5.1 (2019): 1-9.
@@ -78,7 +77,8 @@ Kraft, Nathan JB, et al. "Disentangling the drivers of β diversity along latitu
 \author{
 Soheil A. Neshat, Ezequiel Santillan, Stefan Wuertz
 
-(The MicroEcoTools package was developed in Singapore Centre for Environmental Life Sciences Engineering, Nanyang Technological University, Singapore)
+(The MicroEcoTools package was developed in Singapore Centre for Environmental Life Sciences Engineering, 
+Nanyang Technological University, Singapore)
 }
 \keyword{CSR,}
 \keyword{Grime's}

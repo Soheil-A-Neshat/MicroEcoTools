@@ -1519,7 +1519,7 @@ A data frame with 24 rows and 1509 variables:
 }
 }
 \source{
-Experimental data from 3CA perturbation experiment.
+Experimental data from 3CA perturbation experiment. Santillan, Ezequiel, et al. "Trait‐based life‐history strategies explain succession scenario for complex bacterial communities under varying disturbance." Environmental microbiology 21.10 (2019): 3751-3764.
 }
 \usage{
 CSR_TAXA_data

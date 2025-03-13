@@ -4,20 +4,27 @@
 \alias{pairwise_welch}
 \title{Pairwise Welch-ANOVA (MicroEcoTools)}
 \usage{
-pairwise_welch(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Parallel)
+pairwise_welch(
+  dAtA,
+  var.name = "Variable",
+  p_adj = "BH",
+  v.equal = FALSE,
+  p.value.cutoff = 0.05,
+  Parallel = TRUE
+)
 }
 \arguments{
 \item{dAtA}{Dataframe that contains experimental group, replicates, and parameters.}
 
-\item{var.name}{Variable name used for generating output table, for example, taxa, trait, function.}
+\item{var.name}{Variable name used for generating output table, for example, taxa, trait, function. Defaults to \code{"Variable"}.}
 
-\item{p_adj}{P-value adjustment method. All methods mentioned in ?p.adjust function can be used ("BH", "BY", "holm", "hommel" or "none").}
+\item{p_adj}{P-value adjustment method. All methods mentioned in \code{\link[stats]{p.adjust}} function can be used ("BH", "BY", "holm", "hommel" or "none"). Defaults to \code{"BH"}.}
 
-\item{v.equal}{Assumption of equal variance can be forced using this parameter. By default it is set to FALSE where it cannot be set to FALSE it will switch to TRUE automatically; a note will be shown in the remarks column in those cases.}
+\item{v.equal}{Assumption of equal variance can be forced using this parameter. By default it is set to FALSE where it cannot be set to FALSE it will switch to TRUE automatically; a note will be shown in the remarks column in those cases.Defaults to \code{FALSE}.}
 
-\item{p.value.cutoff}{A cut-off value for calling the P-value significant can be set using this parameter. The default value is 0.05.}
+\item{p.value.cutoff}{A cut-off value for calling the P-value significant can be set using this parameter. Defaults to \code{0.05}.}
 
-\item{Parallel}{Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses half of the available CPU cores to perform the calculations.}
+\item{Parallel}{Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses 80\% of the available CPU cores to perform the calculations.Defaults to \code{TRUE}}
 }
 \value{
 This function returns a table containing the pairwise statistical comparison results. The output table can be fed into the CSR_assign function to assign CSR categories.
@@ -37,16 +44,17 @@ The input data sample:\tabular{lcrcr}{
    X1 \tab 3 \tab 13 \tab 25 \tab 3601 \cr
 }
 }
+\note{
+The input data can be relative abundance or count data. The user must ensure the total count across groups is similar.
+}
 \examples{
+# Generate a pairwise comparison table for traits across experimental groups.
+# This example uses abundance data from a perturbation experiment described in Santillan et al. (2019).
+# The dataset \code{\link[MicroEcoTools]{CSR_IP2G_data}} is included in the MicroEcoTools package.
+# Running the command below produces a pairwise comparison table for IP2G functions.
+# Setting the Parallel to TRUE forces the function to use all available cpu cores to speed up the process.
 \dontrun{
-pairwise_welch(dAtA = CSR_IP2G_data)
-pairwise_welch(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH")
-pairwise_welch(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH", 
-  v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
-pairwise_welch(dAtA = CSR_TAXA_data)
-pairwise_welch(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH")
-pairwise_welch(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH", 
-  v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+pwa_reults <- pairwise_welch(dAtA = CSR_IP2G_data, var.name = "Traits", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
 }
 
 }

@@ -4,29 +4,37 @@
 \alias{CSR_assign}
 \title{Competitor - Stress tolerant - Ruderal assignment (MicroEcoTools)}
 \usage{
-CSR_assign(dAtA, var.name, p_adj, v.equal, p.value.cutoff, Parallel, Vis)
+CSR_assign(
+  dAtA,
+  var.name = "Trait",
+  p_adj = "BH",
+  v.equal = FALSE,
+  p.value.cutoff = 0.05,
+  Parallel = TRUE,
+  Verbose = FALSE
+)
 }
 \arguments{
 \item{dAtA}{Dataframe that contains experimental group, replicates, and parameters.}
 
-\item{var.name}{Variable name used for generating output table, for example, taxa, trait, function.}
+\item{var.name}{Variable name used for generating output table, for example, taxa, trait, function. Defaults to \code{"Trait"}.}
 
-\item{p_adj}{P-value adjustment method. All methods mentioned in ?p.adjust function can be used ("BH", "BY", "holm", "hommel" or "none").}
+\item{p_adj}{P-value adjustment method. All methods mentioned in \code{\link[stats]{p.adjust}} function can be used ("BH", "BY", "holm", "hommel" or "none"). Defaults to \code{"BH"}.}
 
-\item{v.equal}{Assumption of equal variance can be forced using this parameter. By default it is set to FALSE where it cannot be set to FALSE it will switch to TRUE automatically; a note will be shown in the remarks column in those cases.}
+\item{v.equal}{Assumption of equal variance can be forced using this parameter. By default it is set to FALSE where it cannot be set to FALSE it will switch to TRUE automatically; a note will be shown in the remarks column in those cases. Defaults to \code{FALSE}.}
 
-\item{p.value.cutoff}{A cut-off value for calling the P-value significant can be set using this parameter. The default value is 0.05.}
+\item{p.value.cutoff}{A cut-off value for calling the P-value significant can be set using this parameter.  Defaults to \code{0.05}.}
 
-\item{Parallel}{Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses half of the available CPU cores to perform the calculations.}
+\item{Parallel}{Using this parameter you can make use of more CPU cores to decrease run time for the calculation. By default it is set to TRUE and uses half of the available CPU cores to perform the calculations. Defaults to \code{TRUE}.}
 
-\item{Vis}{Using this parameter you can make visualize the top 5 taxa/trait sorted based on P-value or abundance. The graphs will be saved as CSR_plot_sorted_p_value and CSR_plot_sorted_abundance.}
+\item{Verbose}{Run CSR_assign function in verbose mode to explain the assignment. Defaults to \code{FALSE}.}
 }
 \value{
 This function returns a table containing the pairwise statistical comparison results. The output table can be fed into the CSR_assign function to assign CSR categories.
 }
 \description{
 Assigning CSR categories from Grime's framework to the input variable.
-This function assigns CSR categories to the input variables using the output table from the ?pairwise_welch function.
+This function assigns CSR categories to the input variables using the output table from the \code{\link[MicroEcoTools]{pairwise_welch}} function.
 To do so, it looks at the pairwise comparisons and assigns C to the ones abundant in no disturbance group, S to the ones abundant in high disturbance group, and R to the ones abundant in intermediate disturbance groups.
 It also assigns intermediate categories, CR, CS, and SR to groups that are abundant in no-disturbance and intermediate-disturbance, no-disturbance and high-disturbance, and intermediate-disturbance and high-disturbance, respectively.
 Traits that are not differentially abundant in any groups will be assigned to the CSR category.
@@ -43,16 +51,18 @@ The input data sample:\tabular{lcrcr}{
    X1 \tab 3 \tab 13 \tab 25 \tab 3601 \cr
 }
 }
+\note{
+The input data can be relative abundance or count data. The user must ensure the total count across groups is similar.
+}
 \examples{
+# To assign the CSR categories to the traits in the IP2G abundance dataset.
+# This example uses abundance data from a perturbation experiment described in Santillan et al. (2019).
+# The dataset \code{\link[MicroEcoTools]{CSR_IP2G_data}} is included in the MicroEcoTools package.
+# Running the command below runs the welch_anova and pairwise_welch_anova functions.
+# This command  automatically assigns C, S, and R traits to traits abundant in undisturbed, highly diturbed and intermediately disturbed experimental groups.
+# In addition, it assigns intermediate groups CS, CR, and SR to groups prevalent in two categories, e.g., abundant in undisturbed and intermediately disturbed in compare to highly distrubed --> CR. 
 \dontrun{
-CSR_assign(dAtA = CSR_IP2G_data)
-CSR_assign(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH")
-CSR_assign(dAtA = CSR_IP2G_data, var.name = "taxa", p_adj = "BH", 
-  v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
-CSR_assign(dAtA = CSR_TAXA_data)
-CSR_assign(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH")
-CSR_assign(dAtA = CSR_TAXA_data, var.name = "taxa", p_adj = "BH", 
-  v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
+csr_assignment <- CSR_assign(dAtA = CSR_IP2G_data, var.name = "Trait", p_adj = "BH", Parallel = TRUE)
 }
 
 }
