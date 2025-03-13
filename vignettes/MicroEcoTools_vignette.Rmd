@@ -16,7 +16,7 @@ editor_options:
 # Set global options for code chunks
 knitr::opts_chunk$set(echo = TRUE, warning = TRUE, message = TRUE)
 # Load the MicroEcoTools package
-devtools::load_all()
+#devtools::load_all()
 ```
 
 ## Introduction
@@ -32,6 +32,13 @@ Hill diversity. In this vignette, we demonstrate how to prepare your
 data (including converting SummarizedExperiment or phyloseq objects) and
 run the core analyses provided by the package.
 
+This package can be used on experimental community data to investigate the 
+relative contribution of deterministic and stochastic assembly mechanisms through
+a taxa based null model analysis. In addition, Grime's CSR categories can be 
+assigned to taxa and traits in communities under different level of disturbance.
+
+In this tutorial, we a use a dataset obtained through a perturbation experiment:
+
 ## Installation
 
 This chunk installs the MicroEcoTools package.
@@ -40,6 +47,7 @@ This chunk installs the MicroEcoTools package.
 if (!requireNamespace("devtools", quietly = TRUE))
   install.packages("devtools")
 devtools::install_github("Soheil-A-Neshat/MicroEcoTools")
+library(MicroEcoTools)
 ```
 
 ## Data prepration
@@ -90,20 +98,20 @@ comparison tables and plots.
 # Perform CSR category assignment
 csr_result <- CSR_assign(dAtA = CSR_IP2G_data, var.name = "Trait", p_adj = "BH",
                          v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE, Verbose = FALSE)
-summary.CSR_assignments(csr_result$CSR_assignments)
+summary(csr_result)
 ```
 
 ```{r CSR plotting, echo=FALSE}
 # Plot the CSR plot:
 # Traits sorted based on abundance 
-CSR_Plot(CSR_results = csr_result, plot_type = "abundance")
+CSR_plot(CSR_results = csr_result, plot_type = "abundance")
 # Traits sorted based on p-value
-CSR_Plot(CSR_results = csr_result, plot_type = "p_value")
+CSR_plot(CSR_results = csr_result, plot_type = "p_value")
 ```
 
 ```{r CSR assignment summary, echo=FALSE}
 # Summary of the CSR assignment can be seen using:
-summary.CSR_assignments(csr_result$CSR_assignments)
+summary(csr_result)
 ```
 
 ##CSR Assignment with simulation CSR_simulation function generates
@@ -118,7 +126,7 @@ assignment.
 simulation_result <- CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 2, p_adj = "BH",
                                     var.name = "Trait", v.equal = FALSE, p.value.cutoff = 0.05,
                                     Parallel = TRUE, NuLl.test = FALSE, Keep_data = FALSE)
-summary.CSR_simulation(simulation_result)
+summary(simulation_result)
 ```
 
 ##Welch-ANOVA Analysis The Welch_ANOVA function compares traits or taxa
@@ -129,7 +137,7 @@ switches to an equal variance test if needed.
 # Run Welch_ANOVA on the example dataset.
 result_welch <- Welch_ANOVA(dAtA = CSR_IP2G_data, var.name = "Trait", p_adj = "BH", Parallel = FALSE)
 # Print the resulting comparison table
-summary.Welch_ANOVA(result_welch)
+summary(result_welch)
 ```
 
 ##Pairwise Welch-Anova This function performs a pairwise comparison for
@@ -139,7 +147,7 @@ taxa/traits between experimental groups.
 # Generate a pairwise comparison table using pairwise_welch.
 pairwise_result <- pairwise_welch(dAtA = CSR_IP2G_data, var.name = "Trait", p_adj = "BH",
                                   v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
-summary.Pairwise_welch(pairwise_result)
+summary(pairwise_result)
 ```
 
 ##Null model analysis We can assess the relative contribution of
@@ -153,8 +161,9 @@ community assembly.
 
 ```{r Null model analysis, echo=FALSE}
 nma_results <- NMA(DaTa = NMA_data, NSim = 10, InDeX = "invsimpson")
+summary(nma_results)
 #you can look at the standard effect size plot generated using richness as the measure of diversity using
-nma_results$Kraft_SES_plot
+NMA_plot(nma_results, plot_type = "SES_species_number")
 #To see the plot generated for standard effect size using the specified diversity index use
-nma_results$SES_plot
+NMA_plot(nma_results, plot_type = "SES")
 ```

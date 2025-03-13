@@ -397,7 +397,7 @@ NMA <- function(DaTa, NSim = 1000, InDeX = "invsimpson", ObSsIm = FALSE, p.adj =
 #' @examples
 #' \dontrun{
 #'   nma_results <- nma_results <- NMA(DaTa = NMA_data, NSim = 1000)
-#'   summary.NMA(nma_results)
+#'   NMA(nma_results)
 #' }
 #'
 #' @export

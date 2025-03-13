@@ -181,7 +181,7 @@ Welch_ANOVA <- function(dAtA, var.name = "Variable", p_adj = "BH", Parallel = TR
 #' @examples
 #' \dontrun{
 #'   WA_result <- Welch_ANOVA(dAtA = CSR_IP2G_data, var.name = "Traits", p_adj = "BH", Parallel = TRUE)
-#'   summary.Welch_ANOVA(WA_result)
+#'   summary(WA_result)
 #' }
 #'
 #' @export
@@ -597,7 +597,7 @@ pairwise_welch <- function(dAtA,
 #' \dontrun{
 #' pw_results <- pairwise_welch(dAtA = CSR_IP2G_data, var.name = "Traits", p_adj = "BH", 
 #'                       v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
-#' summary.Pairwise_welch(pw_results)
+#' summary(pw_results)
 #' }
 #'
 #' @export
@@ -1205,7 +1205,7 @@ CSR_assign <- function(dAtA,
 #' @examples
 #' \dontrun{
 #' csr_assignment <- CSR_assign(dAtA = CSR_IP2G_data, var.name = "Trait", p_adj = "BH", Parallel = TRUE)
-#' summary.CSR_assignments(csr_assignment)
+#' summary(csr_assignment)
 #' }
 #' @return Invisibly returns a table summarizing the CSR assignments.
 #' @export
@@ -1583,7 +1583,7 @@ CSR_Simulation <- function(DaTa,
 #' @examples 
 #' \dontrun{
 #' csr_simulation <- CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 1000, p_adj = "BH", var.name = "Trait", NuLl.test = FALSE, Keep_data = FALSE)
-#' summary.CSR_simulation(csr_simulation)
+#' summary(csr_simulation)
 #' }
 #' @return Invisibly returns a table summarizing the CSR assignments.
 #' @export
