@@ -28,7 +28,7 @@ Suggests:
     testthat (>= 3.0.0),
     phyloseq,
     SummarizedExperiment
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Depends: 
     R (>= 3.5)
 Config/testthat/edition: 3

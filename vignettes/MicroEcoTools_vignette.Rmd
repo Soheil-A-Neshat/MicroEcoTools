@@ -15,8 +15,6 @@ editor_options:
 ```{r setup, include=FALSE}
 # Set global options for code chunks
 knitr::opts_chunk$set(echo = TRUE, warning = TRUE, message = TRUE)
-# Load the MicroEcoTools package
-#devtools::load_all()
 ```
 
 ## Introduction
@@ -45,8 +43,7 @@ This chunk installs the MicroEcoTools package.
 
 ```{r installation}
 if (!requireNamespace("devtools", quietly = TRUE))
-  install.packages("devtools")
-devtools::install_github("Soheil-A-Neshat/MicroEcoTools")
+  devtools::install_github("Soheil-A-Neshat/MicroEcoTools")
 library(MicroEcoTools)
 ```
 

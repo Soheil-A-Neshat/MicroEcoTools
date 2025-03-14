@@ -19,7 +19,7 @@ Summary method for Pairwise_Welch objects
 \dontrun{
 pw_results <- pairwise_welch(dAtA = CSR_IP2G_data, var.name = "Traits", p_adj = "BH", 
                       v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE)
-summary.Pairwise_welch(pw_results)
+summary(pw_results)
 }
 
 }

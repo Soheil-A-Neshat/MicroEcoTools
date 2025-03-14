@@ -18,7 +18,7 @@ Summary method for Welch_Anova objects
 \examples{
 \dontrun{
   WA_result <- Welch_ANOVA(dAtA = CSR_IP2G_data, var.name = "Traits", p_adj = "BH", Parallel = TRUE)
-  summary.Welch_ANOVA(WA_result)
+  summary(WA_result)
 }
 
 }

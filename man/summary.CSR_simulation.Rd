@@ -18,6 +18,6 @@ Summary method for CSR_assignments objects
 \examples{
 \dontrun{
 csr_simulation <- CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 1000, p_adj = "BH", var.name = "Trait", NuLl.test = FALSE, Keep_data = FALSE)
-summary.CSR_simulation(csr_simulation)
+summary(csr_simulation)
 }
 }

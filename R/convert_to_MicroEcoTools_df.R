@@ -59,8 +59,6 @@
 #'  nma_result <- NMA(DaTa = df_ps, NSim = 10)
 #'  }
 #'
-#' @importFrom SummarizedExperiment colData assay
-#' @importFrom phyloseq sample_data otu_table taxa_are_rows
 #' @export
 convert_to_MicroEcoTools_df <- function(x,
                                         group_col = "Exp.Grp",
@@ -97,7 +95,9 @@ convert_to_MicroEcoTools_df <- function(x,
       return(final_df)
     } else {
       warning(
-        "Package 'SummarizedExperiment' is not installed; cannot convert input to MicroEcoTools data frame format."
+        "Package 'SummarizedExperiment' is not installed; cannot convert input 
+        to MicroEcoTools data frame format. Please install the SummarizedExperiment 
+        package manually before using SummarizedExperiment object as input."
       )
       return(invisible(NULL))
     }
@@ -140,7 +140,8 @@ convert_to_MicroEcoTools_df <- function(x,
       return(final_df)
     } else {
       warning(
-        "Package 'phyloseq' is not installed; cannot convert input to MicroEcoTools data frame format."
+        "Package 'phyloseq' is not installed; cannot convert input to MicroEcoTools data frame format.
+        Please install the Phyloseq package manually before using Phyloseq object as input."
       )
       return(invisible(NULL))
     }

@@ -18,6 +18,6 @@ Summary method for CSR_assignments objects
 \examples{
 \dontrun{
 csr_assignment <- CSR_assign(dAtA = CSR_IP2G_data, var.name = "Trait", p_adj = "BH", Parallel = TRUE)
-summary.CSR_assignments(csr_assignment)
+summary(csr_assignment)
 }
 }
