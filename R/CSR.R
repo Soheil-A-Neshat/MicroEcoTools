@@ -653,6 +653,7 @@ summary.Pairwise_welch <- function(object) {
 #' \dontrun{
 #' csr_assignment <- CSR_assign(dAtA = CSR_IP2G_data, var.name = "Trait", p_adj = "BH", Parallel = TRUE)
 #' }
+#' @seealso \code{vignette("MicroEcoTools_vignette")}
 #' 
 #' @importFrom ggplot2 ggplot aes geom_point theme_minimal theme labs facet_wrap element_blank element_rect
 #' @importFrom reshape2 melt
@@ -1446,7 +1447,8 @@ CSR_Simulation <- function(DaTa,
     CSR_Sim[["CSR"]] <- vector(mode = "list", length = 0)
     CSR_Sim[["Verdict"]] <- vector(mode = "list", length = 0)
     CSR_Sim[["Final_Verdict"]] <- vector(mode = "list", length = 0)
-    
+    CSR_Sim[["Summary"]] <- vector(mode = "list", length = 0)
+
     # ----------------------------------------------------------------------------
     # 3. Data Preprocessing for Simulation
     # ----------------------------------------------------------------------------
@@ -1568,12 +1570,13 @@ CSR_Simulation <- function(DaTa,
     # ----------------------------------------------------------------------------
     # 9. Merge Final Verdict with Original CSR Assignment Table
     # ----------------------------------------------------------------------------
-    CSR_Sim[["Final_Verdict"]] <- merge(suppressMessages(CSR_assign(DaTa)), CSR_Sim[["Final_Verdict"]], all.x = TRUE)
-    
+    CSR_Sim[["Final_Verdict"]] <- do.call(cbind, merge(suppressMessages(CSR_assign(DaTa)), CSR_Sim[["Final_Verdict"]], all.x = TRUE))
+    colnames(CSR_Sim[["Final_Verdict"]]) <- c(var.name, "Welch-ANOVA p-value", "Method", "Adjusted Welch-ANOVA p-value", "CSR assignment (observed)", "Remarks", "C", "R", "S", "CR", "CS", "SR", "CSR", "NA")
     # ----------------------------------------------------------------------------
     # 10. Return the Final Simulation Results
     # ----------------------------------------------------------------------------
-    class(CSR_Sim[["Final_Verdict"]]) <- "Final_verdict"
+    CSR_Sim[["Summary"]] <- CSR_Sim[["Final_Verdict"]]
+    class(CSR_Sim[["Summary"]]) <- "Final_verdict"
     return(CSR_Sim)
   }
 }

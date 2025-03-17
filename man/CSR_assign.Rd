@@ -64,5 +64,7 @@ The input data can be relative abundance or count data. The user must ensure the
 \dontrun{
 csr_assignment <- CSR_assign(dAtA = CSR_IP2G_data, var.name = "Trait", p_adj = "BH", Parallel = TRUE)
 }
-
+}
+\seealso{
+\code{vignette("MicroEcoTools_vignette")}
 }

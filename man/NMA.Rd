@@ -67,12 +67,16 @@ to calculate the standard effect size between the observed communities and the s
   # Perform null model analysis on experimental data from a perturbation experiment.
   nma_results <- NMA(DaTa = NMA_data, NSim = 1000)
 }
-
 }
 \references{
 Santillan, Ezequiel, et al. "Frequency of disturbance alters diversity, function, and underlying assembly mechanisms of complex bacterial communities." npj Biofilms and Microbiomes 5.1 (2019): 1-9.
 
 Kraft, Nathan JB, et al. "Disentangling the drivers of β diversity along latitudinal and elevational gradients." Science 333.6050 (2011): 1755-1758.
+}
+\seealso{
+\code{vignette("MicroEcoTools_vignette")}
+
+\code{vignette("MicroEcoTools_vignette")}
 }
 \author{
 Soheil A. Neshat, Ezequiel Santillan, Stefan Wuertz

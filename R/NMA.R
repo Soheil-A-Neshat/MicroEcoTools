@@ -11,6 +11,8 @@
 #'
 #' @keywords Trait-based, CSR, Grime's triangle, Intermediate stochasticity hypothesis, Null model analysis, community ecology, Theoretical microbial ecology
 #'
+#' @seealso \code{vignette("MicroEcoTools_vignette")}
+#'
 #' @section Null model analysis (NMA):
 #' Using a null model approach, this function tests the relative contribution of assembly mechanisms in a given community. 
 #' Based on the observed communities, it simulates random communities using a multinomial distribution. A diversity metric is then used 
@@ -41,7 +43,7 @@
 #'   # Perform null model analysis on experimental data from a perturbation experiment.
 #'   nma_results <- NMA(DaTa = NMA_data, NSim = 1000)
 #' }
-#'
+#' @seealso \code{vignette("MicroEcoTools_vignette")}
 #' @note All environmental variables should be converted to factors.
 #' @note Accepted environmental variables: Time_point, Exp.Grp, and Replicate.
 #'
