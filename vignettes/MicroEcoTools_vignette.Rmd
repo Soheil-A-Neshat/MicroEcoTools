@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = TRUE, message = TRUE)
 
 ## Introduction
 
-MicroEcoTools is an R package that empowers microbial ecologists with a comprehensive suite of computational tools to apply theoretical frameworks to community data. It implements methods for testing hypotheses on communities under disturbance, including both trait-based approaches—using Grime's Competitive–Stress tolerant–Ruderal (CSR) framework—and null model analyses (NMA). The package supports the analysis of complex datasets derived from perturbation experiments and other ecological studies.
+MicroEcoTools is an R package that empowers microbial ecologists with a comprehensive suite of computational tools to apply theoretical frameworks to community data. It implements methods for testing hypotheses on communities under disturbance, including both trait-based approaches—using Grime's Competitive–Stress tolerant–Ruderal (CSR) framework—and null model analyses (NMA). The package supports the analysis of complex datasets derived from perturbation experiments and other ecological studies. The manuscript is available through BioRxiV: "Neshat, Soheil A., Ezequiel Santillan, and Stefan Wuertz. "MicroEcoTools: an R package for comprehensive theoretical microbial ecology analysis." bioRxiv (2024): 2024-08."
 
 **Key functionalities include:**
 - **Pairwise Comparisons and CSR Assignment:** Automatically assign CSR categories to taxa or traits based on pairwise statistical comparisons.
@@ -88,7 +88,7 @@ First we will apply the Grime's CSR framework on the CSR_IP2G_data to assign com
 CSR_assign function analyses the dataset and assigns competitive, stress-tolerant and ruderal categories to traits/taxa which are abundant in undisturbed, highly disturbed and intermediately disturbed communities. The output for this function is a list containing comparison tables and required materials for the plotting function (CSR_plot).
 CSR_assign function requires a data set to perform the analysis. The rest of the arguments have set defaults to conduct the analysis. You can investigate the parameters in the help function and change the parameters if required.
 
-```{r CSR assignment, echo=FALSE}
+```{r CSR assignment}
 # Perform CSR category assignment
 csr_result <- CSR_assign(dAtA = CSR_IP2G_data)
 #csr_result <- CSR_assign(dAtA = CSR_IP2G_data, var.name = "Trait", p_adj = "BH", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE, Verbose = FALSE)
@@ -105,7 +105,7 @@ Then, we can visualise the CSR assignments:
 # Traits sorted based on abundance 
 CSR_plot(CSR_results = csr_result, plot_type = "abundance")
 # Traits sorted based on p-value
-CSR_plot(CSR_results = csr_result, plot_type = "p_value")
+# CSR_plot(CSR_results = csr_result, plot_type = "p_value")
 ```
 
 
@@ -113,20 +113,20 @@ CSR_plot(CSR_results = csr_result, plot_type = "p_value")
 CSR_simulation function generates simulated communities with similar multinomial distribution to the observed communities and performs CSR category assignment on observed and simulated communities. The difference between this function and CSR_assign is that this function calculates a probability value which shows accuracy of the category assignment.
 
 This function requires an input data frame along with the number of simulations. We recommend using at least 1000 simulations to achieve more accurate analysis. Here, we used 3 simulations to just demonstrate the functionality:
-```{r CSR assignment with simulation, echo=FALSE}
+```{r CSR assignment with simulation}
 # Run CSR_Simulation on the dataset.
 #simulation_result <- CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 2)
 simulation_result <- CSR_Simulation(DaTa = CSR_IP2G_data, NSim = 2, p_adj = "BH", var.name = "Trait", v.equal = FALSE, p.value.cutoff = 0.05, Parallel = TRUE, NuLl.test = FALSE, Keep_data = FALSE)
 ```
 We can check the output table by:
-```{r CSR assignment with simulation, echo=FALSE}
+```{r CSR assignment with simulation output inspection, echo=FALSE}
 View(simulation_result$Final_Verdict)
 summary(simulation_result)
 ```
 ##Null model analysis 
 To assess the relative contribution of stochastic and deterministic assembly mechanisms in a community using the NMA function. Running the following code chunk does this analysis. This function takes in the observed communities, pool all the taxa and generate random communities from the pool. Then, it compares the observed communities and randomly generated communities to calculate an effect size. The higher the effect size the more deterministic the community assembly.
 
-```{r Null model analysis, echo=FALSE}
+```{r Null model analysis}
 nma_results <- NMA(DaTa = NMA_data, NSim = 10, InDeX = "invsimpson")
 summary(nma_results)
 ```
