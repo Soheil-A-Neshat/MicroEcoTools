@@ -55,7 +55,7 @@ MicroEcoTools utilizes several R packages, including data.table, dplyr, ggplot2,
 
 ## References and Documentation
 For a detailed description of the package's functions and additional examples, please refer to the official documentation available through R help function.
-More details are available here: https://www.biorxiv.org/content/10.1101/2024.08.19.608598v1
+More details are available here: https://doi.org/10.1111/2041-210X.70047
 
 ## Limitations
 Requires at least two biological replicates for analysis.
