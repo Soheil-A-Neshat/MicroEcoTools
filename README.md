@@ -4,7 +4,8 @@
 
 # MicroEcoTools
 Theoretical Microbial Ecology Computational Tools
-[![DOI](https://zenodo.org/badge/750170317.svg)](https://doi.org/10.5281/zenodo.15201181)
+[![DOI](https://zenodo.org/badge/DOI/10.1111/2041-210X.70047.svg)](https://doi.org/10.1111/2041-210X.70047)
+
 
 MicroEcoTools is an R package developed for microbial ecologists to apply ecological frameworks to microbial community data. This package helps analyze the effects of disturbances on microbial communities by assessing microbial diversity, community assembly mechanisms, and life-history strategies.
 
@@ -66,6 +67,5 @@ Unit tests was performed using testthat package and coverage assessed through co
   MicroEcoTools Coverage: 78.00%
 
 ## Citation
-Neshat, S. A., Santillan, E., & Wuertz, S. (2025). MicroEcoTools: An R package for comprehensive theoretical microbial ecology analysis. Methods in Ecology and Evolution, 00, 1–9.
-bioRxiv 2024.08.19.608598; doi: https://doi.org/10.1111/2041-210X.70047
+Neshat, S. A., Santillan, E., & Wuertz, S. (2025). MicroEcoTools: An R package for comprehensive theoretical microbial ecology analysis. Methods in Ecology and Evolution, 16, 1369–1377. https://doi.org/10.1111/2041-210X.70047
 
