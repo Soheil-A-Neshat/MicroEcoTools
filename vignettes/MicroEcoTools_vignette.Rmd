@@ -139,6 +139,23 @@ NMA_plot(nma_results, plot_type = "SES")
 ```
 The lower the standard effect size the greater contribution of stochastic assembly mechanisms.
 
+## Hill Diversity
+
+Hill numbers are a family of diversity indices parameterized by an order number \( q \), which determines the sensitivity of the measure to species abundance. They unify commonly used metrics like species richness (q = 0), Shannon diversity (q = 1), and Simpson diversity (q = 2).
+
+The `Hill_diversity` function in MicroEcoTools takes a count matrix as input and computes Hill numbers for a specified order.
+
+```{r Hill diversity, echo=TRUE}
+# Load dataset
+data(NMA_data)
+
+# Compute second order Hill diversity q = 1 (inverse Simpson)
+hill_result <- Hill_diversity(DaTa = NMA_data, q = 1)
+
+# View the result
+head(hill_result)
+
+
 ## Conclusion
 
 In this vignette, we demonstrated how MicroEcoTools can be used to analyze microbial community data through both null model analysis and trait‐based CSR assignments. By walking through the data preparation, CSR assignment, and null model analysis workflows, we illustrated the package's flexibility in handling complex experimental designs and its ability to generate intuitive visual summaries of microbial assembly mechanisms. We encourage users to explore the package with their own datasets and adapt the provided workflows to their research questions. 

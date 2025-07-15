@@ -8,10 +8,6 @@ test_that("Null model analysis works", {
 })
 
 test_that("NMA returns results with expected components", {
-
-})
-
-test_that("NMA returns results with expected components", {
   data("NMA_data")
   nma_results <- NMA(DaTa = NMA_data, NSim = 10, InDeX = "invsimpson", Deb = TRUE)
   # Check that essential components are in the result
